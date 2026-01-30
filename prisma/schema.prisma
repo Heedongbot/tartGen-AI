@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String?  @unique
+  createdAt     DateTime @default(now())
+  ideas         Idea[]
+  // subscription  Subscription? // Model not defined in prompt, commented out for now
+}
+
+model Idea {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  
+  // Input data
+  location    String
+  age         String
+  mbti        String
+  occupation  String
+  budget      Int
+  timeCommit  String
+  interests   String[]
+  
+  // Generated content
+  title       String
+  description String   @db.Text
+  marketData  Json
+  whyYou      String   @db.Text
+  roadmap     Json
+  products    Json
+  
+  createdAt   DateTime @default(now())
+}

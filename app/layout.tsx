@@ -11,8 +11,8 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Startup Idea Generator",
-  description: "AI-powered personalized startup ideas",
+  title: "StartGen AI - 나만의 창업 아이디어 생성기",
+  description: "AI가 분석하는 맞춤형 창업 아이디어와 로드맵",
 };
 
 export default function RootLayout({
@@ -21,7 +21,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="ko" suppressHydrationWarning translate="no" className="dark">
+      <head>
+        <meta name="google" content="notranslate" />
+      </head>
       <body
         className={`${inter.variable} ${spaceGrotesk.variable} antialiased font-sans bg-[#000000] text-foreground min-h-screen flex flex-col`}
       >

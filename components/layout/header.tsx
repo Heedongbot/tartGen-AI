@@ -17,7 +17,7 @@ export function Header() {
                         <span className="text-xl font-bold text-white">S</span>
                     </div>
                     <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70">
-                        StartupIdeas.ai
+                        StartGen AI
                     </span>
                 </Link>
                 <nav className="hidden md:flex gap-6">
