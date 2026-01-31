@@ -159,6 +159,44 @@ function ResultContent() {
         }
     };
 
+    const handleManualSave = async () => {
+        if (!dataParam) return;
+
+        const loadingToast = toast.loading("아이디어 저장 중...");
+        try {
+            const inputs = JSON.parse(decodeURIComponent(dataParam));
+            const payload = {
+                ...inputs,          // Original inputs (location, budget, etc.)
+                ...result,          // Generated content (title, description, etc.)
+                market: undefined,  // Cleanup if needed, but API expects 'market' mapped to 'marketData'
+                marketData: result.market // Map frontend 'market' to API expected 'market' (or API handles it)
+            };
+
+            const res = await fetch("/api/ideas/save", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                toast.dismiss(loadingToast);
+                toast.success("아이디어가 성공적으로 저장되었습니다!");
+                setResult(prev => ({ ...prev, id: data.id, userId: user?.id }));
+
+                // Update URL to 'id' mode to persist state
+                window.history.replaceState(null, "", `/result?id=${data.id}`);
+            } else {
+                throw new Error(data.error || "저장 실패");
+            }
+        } catch (error: any) {
+            toast.dismiss(loadingToast);
+            console.error(error);
+            toast.error(`저장 실패: ${error.message}`);
+        }
+    };
+
     const handlePublish = async () => {
         if (!result?.id) return;
 
@@ -309,7 +347,18 @@ function ResultContent() {
                         <p className="text-xl text-white/80 max-w-2xl">{result.description}</p>
                     </div>
                     <div className="flex flex-wrap gap-2">
-                        {user?.id === result?.userId && (
+                        {/* 💾 Manual Save Button (Show only if not saved yet) */}
+                        {!result.id && (
+                            <Button
+                                onClick={handleManualSave}
+                                className="bg-purple-600 hover:bg-purple-700 text-white border-0 shadow-lg shadow-purple-500/20"
+                            >
+                                <Check className="w-4 h-4 mr-2" /> 아이디어 저장
+                            </Button>
+                        )}
+
+                        {/* 📢 Publish Button (Show only if saved and owned) */}
+                        {result.id && user?.id === (result.userId || user.id) && (
                             <Button
                                 variant="outline"
                                 onClick={handlePublish}
@@ -319,6 +368,7 @@ function ResultContent() {
                                 {result.isPublic ? "공개 취소" : "커뮤니티 공개"}
                             </Button>
                         )}
+
                         <Button variant="outline" onClick={handleShare} className="bg-white/5 border-white/10 text-white hover:bg-white/10">
                             <Share2 className="w-4 h-4 mr-2" /> 공유하기
                         </Button>

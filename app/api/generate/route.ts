@@ -191,87 +191,15 @@ export async function POST(request: NextRequest) {
       })) || []
     };
 
-    // 💾 Database Saving Logic (Graceful)
-    try {
-      if (prisma) {
-        // 🔐 Check Supabase Auth session
-        const { createClient } = await import("@/lib/supabase-server");
-        const supabase = await createClient(); // Await added here
-        const { data: { user: authUser } } = await supabase.auth.getUser();
+    // 💾 Database Saving REMOVED used to be here
+    // Manual save implemented in /api/ideas/save
 
-        let targetUserId: string;
-
-        if (authUser) {
-          // 👤 Logged in user: Upsert Prisma User
-          const prismaUser = await prisma.user.upsert({
-            where: { id: authUser.id },
-            update: { email: authUser.email },
-            create: {
-              id: authUser.id,
-              email: authUser.email
-            }
-          });
-          targetUserId = prismaUser.id;
-        } else {
-          // 👻 Guest user: Create a temporary anonymous user (Keep legacy behavior)
-          const guestUser = await prisma.user.create({
-            data: {}
-          });
-          targetUserId = guestUser.id;
-        }
-
-        const savedIdea = await prisma.idea.create({
-          data: {
-            userId: targetUserId,
-            location: location || "",
-            age: age || "", // Use age (mapped from ageGroup)
-            mbti: mbti || "",
-            occupation: occupation || "",
-            budget: typeof budget === 'number' ? budget : parseInt(budget as string) || 0,
-            timeCommit: timeCommit || "",
-            interests: interests || [],
-
-            // New Market Settings (Tiered)
-            continent: continent || "Global",
-            growthSpeed: growthSpeed || "Moderate",
-            marketSize: marketSize || "Medium",
-            tier: tier || "FREE",
-
-            // Generated Content
-            title: normalizedData.title,
-            description: normalizedData.description,
-            marketData: normalizedData.market,
-            whyYou: normalizedData.whyYou.join("\n"),
-            roadmap: normalizedData.roadmap,
-            products: normalizedData.products,
-
-            // Initial social state
-            isPublic: false
-          }
-        });
-
-        console.log(`✅ Idea saved to database! (UID: ${targetUserId})`);
-
-        // Add ID to response so frontend can link to it
-        return NextResponse.json({
-          success: true,
-          id: savedIdea.id,
-          ...normalizedData,
-          metadata: {
-            model: "gemini-2.5-flash",
-            timestamp: new Date().toISOString(),
-            isGuest: !authUser
-          }
-        });
-      }
-    } catch (dbError) {
-      console.warn("⚠️ Database save failed (non-fatal):", dbError);
-    }
-
+    // Return generated data (without saving)
     return NextResponse.json({
       success: true,
-      ...normalizedData, // Frontend expects these keys at top level
-      raw: rawData,      // Keep raw data for debugging
+      id: null,
+      ...normalizedData,
+      raw: rawData,
       metadata: {
         model: "gemini-2.5-flash",
         timestamp: new Date().toISOString()
