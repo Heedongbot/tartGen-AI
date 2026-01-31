@@ -37,6 +37,7 @@ type GeneratedIdea = {
 function ResultContent() {
     const searchParams = useSearchParams();
     const dataParam = searchParams.get("data");
+    const idParam = searchParams.get("id"); // Get ID from URL
     const [loading, setLoading] = useState(true);
     const [result, setResult] = useState<any>(null);
     const [user, setUser] = useState<any>(null);
@@ -46,56 +47,63 @@ function ResultContent() {
     const router = useRouter();
 
     useEffect(() => {
-        if (!dataParam) return;
-
-        const fetchData = async () => {
-            try {
-                const userData = JSON.parse(decodeURIComponent(dataParam));
-                const res = await fetch("/api/generate", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(userData),
-                });
-
-                if (!res.ok) {
-                    const errorHtml = await res.text();
-                    console.error("API Error Status:", res.status);
-                    throw new Error(`Server returned status: ${res.status}`);
-                }
-
-                const data = await res.json();
-
-                if (data.error) {
-                    throw new Error(data.details || data.error);
-                }
-
-                setResult(data);
-            } catch (error: any) {
-                console.error("Failed to generate idea", error);
-                // Show the actual error message from the API
-                alert(`오류가 발생했습니다: ${error.message}`);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         const checkUser = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             setUser(user);
         };
         checkUser();
 
-        // 실시간 세션 감지 추가
+        // 실시간 세션 감지
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setUser(session?.user ?? null);
         });
 
-        fetchData();
+        const loadData = async () => {
+            setLoading(true);
+            try {
+                if (idParam) {
+                    // ID가 있으면 DB에서 직접 조회
+                    const res = await fetch(`/api/ideas/${idParam}`);
+                    const data = await res.json();
+                    if (data.success) {
+                        setResult(data);
+                    } else {
+                        throw new Error(data.error);
+                    }
+                } else if (dataParam) {
+                    // 데이터 파라미터가 있으면 새로 생성
+                    const userData = JSON.parse(decodeURIComponent(dataParam));
+                    const res = await fetch("/api/generate", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(userData),
+                    });
+
+                    if (!res.ok) throw new Error(`Server returned status: ${res.status}`);
+                    const data = await res.json();
+                    if (data.error) throw new Error(data.details || data.error);
+
+                    setResult(data);
+                    // 새로 생성된 경우 ID가 있으면 URL 업데이트 (Optional but good for sharing)
+                    if (data.id) {
+                        window.history.replaceState(null, "", `/result?id=${data.id}`);
+                    }
+                }
+            } catch (error: any) {
+                console.error("Failed to load idea", error);
+                alert(`오류가 발생했습니다: ${error.message}`);
+                router.push("/");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadData();
 
         return () => {
             subscription.unsubscribe();
         };
-    }, [dataParam]);
+    }, [dataParam, idParam]);
 
     const handleShare = async () => {
         // 🔒 보안 강화: 공유 기능도 로그인체크 수행
@@ -148,6 +156,23 @@ function ResultContent() {
                 }
                 document.body.removeChild(textArea);
             }
+        }
+    };
+
+    const handlePublish = async () => {
+        if (!result?.id) return;
+
+        try {
+            const res = await fetch(`/api/ideas/${result.id}/publish`, { method: "PATCH" });
+            const data = await res.json();
+            if (data.success) {
+                toast.success(data.message);
+                setResult({ ...result, isPublic: data.isPublic });
+            } else {
+                toast.error(data.error);
+            }
+        } catch (error) {
+            toast.error("변경 중 오류가 발생했습니다.");
         }
     };
 
@@ -214,8 +239,8 @@ function ResultContent() {
         }
     };
 
-    if (!dataParam) {
-        return <div className="text-white text-center py-20">데이터가 없습니다. 홈으로 돌아가주세요.</div>;
+    if (!dataParam && !idParam) {
+        return <div className="text-white text-center py-20">잘못된 접근입니다. 홈으로 돌아가주세요.</div>;
     }
 
     if (loading) {
@@ -283,7 +308,17 @@ function ResultContent() {
                         <h1 className="text-4xl font-bold text-white mb-2">{result.title}</h1>
                         <p className="text-xl text-white/80 max-w-2xl">{result.description}</p>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
+                        {user?.id === result?.userId && (
+                            <Button
+                                variant="outline"
+                                onClick={handlePublish}
+                                className={result.isPublic ? "bg-green-500/10 border-green-500/30 text-green-400 hover:bg-green-500/20" : "bg-white/5 border-white/10 text-white hover:bg-white/10"}
+                            >
+                                <Share2 className="w-4 h-4 mr-2" />
+                                {result.isPublic ? "공개 취소" : "커뮤니티 공개"}
+                            </Button>
+                        )}
                         <Button variant="outline" onClick={handleShare} className="bg-white/5 border-white/10 text-white hover:bg-white/10">
                             <Share2 className="w-4 h-4 mr-2" /> 공유하기
                         </Button>

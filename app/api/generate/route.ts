@@ -172,16 +172,37 @@ export async function POST(request: NextRequest) {
     // 💾 Database Saving Logic (Graceful)
     try {
       if (prisma) {
-        // Create a temporary user or link to existing (For MVP, we just create a new anonymous user per request)
-        const user = await prisma.user.create({
-          data: {}
-        });
+        // 🔐 Check Supabase Auth session
+        const { createClient } = await import("@/lib/supabase-server");
+        const supabase = await createClient(); // Await added here
+        const { data: { user: authUser } } = await supabase.auth.getUser();
 
-        await prisma.idea.create({
+        let targetUserId: string;
+
+        if (authUser) {
+          // 👤 Logged in user: Upsert Prisma User
+          const prismaUser = await prisma.user.upsert({
+            where: { id: authUser.id },
+            update: { email: authUser.email },
+            create: {
+              id: authUser.id,
+              email: authUser.email
+            }
+          });
+          targetUserId = prismaUser.id;
+        } else {
+          // 👻 Guest user: Create a temporary anonymous user (Keep legacy behavior)
+          const guestUser = await prisma.user.create({
+            data: {}
+          });
+          targetUserId = guestUser.id;
+        }
+
+        const savedIdea = await prisma.idea.create({
           data: {
-            userId: user.id,
+            userId: targetUserId,
             location: location || "",
-            age: age || "",
+            age: age || "", // Use age (mapped from ageGroup)
             mbti: mbti || "",
             occupation: occupation || "",
             budget: typeof budget === 'number' ? budget : parseInt(budget as string) || 0,
@@ -200,10 +221,26 @@ export async function POST(request: NextRequest) {
             marketData: normalizedData.market,
             whyYou: normalizedData.whyYou.join("\n"),
             roadmap: normalizedData.roadmap,
-            products: normalizedData.products
+            products: normalizedData.products,
+
+            // Initial social state
+            isPublic: false
           }
         });
-        console.log("✅ Idea saved to database!");
+
+        console.log(`✅ Idea saved to database! (UID: ${targetUserId})`);
+
+        // Add ID to response so frontend can link to it
+        return NextResponse.json({
+          success: true,
+          id: savedIdea.id,
+          ...normalizedData,
+          metadata: {
+            model: "gemini-2.5-flash",
+            timestamp: new Date().toISOString(),
+            isGuest: !authUser
+          }
+        });
       }
     } catch (dbError) {
       console.warn("⚠️ Database save failed (non-fatal):", dbError);

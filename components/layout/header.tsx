@@ -35,6 +35,12 @@ export function Header() {
         router.refresh();
     };
 
+    const navItems = [
+        { name: "커뮤니티", href: "/community" },
+        { name: "내 보관함", href: "/my-ideas", protected: true },
+        { name: "요금제", href: "/pricing" },
+    ];
+
     return (
         <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-black/20 backdrop-blur-md">
             <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
@@ -46,20 +52,27 @@ export function Header() {
                         StartGen AI
                     </span>
                 </Link>
-                <nav className="hidden md:flex gap-6">
-                    <Link href="/pricing" className={cn("text-sm font-medium transition-colors hover:text-white", pathname === "/pricing" ? "text-white" : "text-white/60")}>
-                        Pricing
-                    </Link>
-                    {["About", "Blog", "Contact"].map((item) => (
-                        <Link
-                            key={item}
-                            href="#"
-                            className="text-sm font-medium text-white/60 transition-colors hover:text-white"
-                        >
-                            {item}
-                        </Link>
-                    ))}
+
+                <nav className="hidden md:flex gap-8">
+                    {navItems.map((item) => {
+                        // Hide protected items if not logged in
+                        if (item.protected && !user) return null;
+
+                        return (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                className={cn(
+                                    "text-sm font-medium transition-colors hover:text-white",
+                                    pathname === item.href ? "text-white" : "text-white/60"
+                                )}
+                            >
+                                {item.name}
+                            </Link>
+                        );
+                    })}
                 </nav>
+
                 <div className="flex items-center gap-4">
                     {user ? (
                         <div className="flex items-center gap-3">
@@ -85,7 +98,7 @@ export function Header() {
                         </Link>
                     )}
                     <Link href="/#generate">
-                        <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0">
+                        <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 font-bold">
                             아이디어 생성
                         </Button>
                     </Link>

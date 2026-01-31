@@ -42,5 +42,10 @@ model Idea {
   roadmap     Json
   products    Json
   
+  // Social Features
+  isPublic    Boolean  @default(false)
+  viewCount   Int      @default(0)
+  likeCount   Int      @default(0)
+  
   createdAt   DateTime @default(now())
 }
