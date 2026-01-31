@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
     const apiKey = process.env.GOOGLE_API_KEY;
     const dbUrl = process.env.DATABASE_URL;

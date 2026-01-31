@@ -2,6 +2,8 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma"; // Import Prisma client
 
+export const dynamic = 'force-dynamic';
+
 // Use the existing GOOGLE_API_KEY
 export async function POST(request: NextRequest) {
   try {
