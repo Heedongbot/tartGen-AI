@@ -185,7 +185,7 @@ function ResultContent() {
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = pdf.internal.pageSize.getHeight();
 
-            // 📄 Query all page elements
+            // 📄 Query all page elements (Tagged with .pdf-page)
             const pages = pdfRef.current.querySelectorAll(".pdf-page");
 
             for (let i = 0; i < pages.length; i++) {
@@ -197,10 +197,25 @@ function ResultContent() {
                     quality: 1.0,
                 });
 
-                if (i > 0) pdf.addPage();
+                const imgProps = pdf.getImageProperties(canvas);
+                const renderedHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-                // 각 페이지가 정확히 A4 비율로 렌더링되도록 삽입
-                pdf.addImage(canvas, "PNG", 0, 0, pdfWidth, pdfHeight);
+                let heightLeft = renderedHeight;
+                let position = 0;
+
+                // 📄 해당 섹션이 A4 1장을 넘어가면 여러 장에 걸쳐 추가 (비율 보존)
+                while (heightLeft > 0) {
+                    // 첫 섹션의 첫 페이지가 아니거나, 현재 섹션 내에서 페이지가 넘어가는 경우 새 페이지 추가
+                    if (i > 0 || position < 0) {
+                        pdf.addPage();
+                    }
+
+                    // 0.1mm 정도의 미세한 오차를 줄이기 위해 height와 y 좌표를 정밀하게 계산
+                    pdf.addImage(canvas, "PNG", 0, position, pdfWidth, renderedHeight);
+
+                    heightLeft -= pdfHeight;
+                    position -= pdfHeight;
+                }
             }
 
             pdf.save(`StartGen_Premium_Report_${result?.title || "Idea"}.pdf`);
