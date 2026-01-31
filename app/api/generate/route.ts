@@ -4,13 +4,17 @@ import { prisma } from "@/lib/prisma"; // Import Prisma client
 
 export const dynamic = 'force-dynamic';
 
-// Use the existing GOOGLE_API_KEY
+// Use the existing GOOGLE_API_KEY with fallbacks
 export async function POST(request: NextRequest) {
   try {
-    const apiKey = process.env.GOOGLE_API_KEY;
+    // Try multiple possible environment variable names
+    const apiKey = process.env.GOOGLE_API_KEY ||
+      process.env.GEMINI_API_KEY ||
+      process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
 
     if (!apiKey) {
-      throw new Error("GOOGLE_API_KEY is missing in environment variables");
+      console.error("❌ API Key Missing. Available Keys:", Object.keys(process.env).filter(k => k.includes("API") || k.includes("KEY")));
+      throw new Error("GOOGLE_API_KEY is missing in environment variables. Please check Vercel settings.");
     }
 
     // Initialize inside the handler to handle environment variable latency/absence safely
