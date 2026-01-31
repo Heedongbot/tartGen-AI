@@ -11,6 +11,8 @@ CREATE TABLE "User" (
 CREATE TABLE "Idea" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
+    
+    -- Input Data
     "location" TEXT NOT NULL,
     "age" TEXT NOT NULL,
     "mbti" TEXT NOT NULL,
@@ -18,12 +20,26 @@ CREATE TABLE "Idea" (
     "budget" INTEGER NOT NULL,
     "timeCommit" TEXT NOT NULL,
     "interests" TEXT[],
+    
+    -- Market Data (Tiered)
+    "continent" TEXT,
+    "growthSpeed" TEXT,
+    "marketSize" TEXT,
+    "tier" TEXT DEFAULT 'FREE',
+
+    -- Generated Content
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "marketData" JSONB NOT NULL,
     "whyYou" TEXT NOT NULL,
     "roadmap" JSONB NOT NULL,
     "products" JSONB NOT NULL,
+    
+    -- Social Features
+    "isPublic" BOOLEAN NOT NULL DEFAULT false,
+    "viewCount" INTEGER NOT NULL DEFAULT 0,
+    "likeCount" INTEGER NOT NULL DEFAULT 0,
+
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Idea_pkey" PRIMARY KEY ("id")

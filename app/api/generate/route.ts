@@ -111,8 +111,30 @@ export async function POST(request: NextRequest) {
 
 위 JSON 스키마를 정확히 따라 유효한 JSON만 반환하세요.`;
 
-    const result = await model.generateContent(prompt);
-    const responseText = result.response.text();
+    // 🔄 Auto-Retry Logic with Exponential Backoff
+    let result;
+    let retryCount = 0;
+    const MAX_RETRIES = 3;
+
+    while (retryCount <= MAX_RETRIES) {
+      try {
+        result = await model.generateContent(prompt);
+        break; // Success
+      } catch (e: any) {
+        if (e.message?.includes("429") || e.message?.includes("Resource exhausted")) {
+          retryCount++;
+          if (retryCount > MAX_RETRIES) throw e;
+
+          const waitTime = 2000 * Math.pow(2, retryCount - 1); // 2s, 4s, 8s
+          console.log(`⚠️ Rate limit hit. Retrying in ${waitTime / 1000}s... (Attempt ${retryCount}/${MAX_RETRIES})`);
+          await new Promise(resolve => setTimeout(resolve, waitTime));
+        } else {
+          throw e; // Other errors, fail immediately
+        }
+      }
+    }
+
+    const responseText = result?.response.text() || "";
 
     console.log("🔍 Gemini JSON Response:", responseText.substring(0, 200) + "...");
 
@@ -260,10 +282,19 @@ export async function POST(request: NextRequest) {
     console.error("❌ API 에러 상세:");
     console.error("메시지:", error.message);
 
+    // 🚦 Handle Rate Limiting (429) specifically
+    if (error.message?.includes("429") || error.message?.includes("Resource exhausted")) {
+      return NextResponse.json({
+        error: "사용자가 많아 AI가 잠시 쉬고 있습니다 😅",
+        details: "1분 뒤에 다시 시도해주세요. (Google API Rate Limit)",
+        isRateLimit: true
+      }, { status: 429 });
+    }
+
     return NextResponse.json({
       error: "아이디어 생성 실패",
-      details: error.message, // 프론트엔드에서 볼 수 있게 에러 메시지 포함
-      stack: error.stack // 디버깅용 스택 트레이스 (보안상 주의 필요하지만 지금은 디버깅이 우선)
-    }, { status: 200 }); // 200으로 보내서 클라이언트가 본문을 읽을 수 있게 함 (임시)
+      details: error.message,
+      stack: error.stack
+    }, { status: 500 });
   }
 }
