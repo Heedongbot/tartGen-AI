@@ -71,6 +71,10 @@ export async function POST(request: NextRequest) {
 {
   "title": "매력적인 아이디어 제목",
   "description": "200-250단어의 상세 설명",
+  "marketAnalysis": {
+    "direction": "시장의 흐름, 트렌드, 향후 전망 (상세히)",
+    "value": "이 아이디어의 독특한 가치 제안 및 경제적 잠재력 (상세히)"
+  },
   "marketData": {
     "size": "$X.XB 형식",
     "growthRate": "+XX% 형식",
@@ -101,12 +105,6 @@ export async function POST(request: NextRequest) {
       "category": "제품 카테고리",
       "price": "$XX 또는 ₩XX,XXX 형식",
       "amazonKeyword": "검색 키워드"
-    },
-    {
-      "name": "두 번째 제품",
-      "category": "카테고리",
-      "price": "가격",
-      "amazonKeyword": "키워드"
     }
   ]
 }
@@ -146,7 +144,9 @@ export async function POST(request: NextRequest) {
       market: {
         size: rawData.marketData?.size || "N/A",
         growth: rawData.marketData?.growthRate || "N/A",
-        competition: rawData.marketData?.competition || "N/A"
+        competition: rawData.marketData?.competition || "N/A",
+        direction: rawData.marketAnalysis?.direction || "해당하는 정보가 없습니다.",
+        value: rawData.marketAnalysis?.value || "해당하는 정보가 없습니다."
       },
       // Flatten 'whyYou' object into string array for Frontend
       whyYou: [

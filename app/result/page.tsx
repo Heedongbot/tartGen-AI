@@ -4,7 +4,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, Suspense, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, ArrowRight, Download, Share2, RefreshCw, Check, Zap } from "lucide-react";
+import { Share2, Download, Check, ArrowRight, Loader2, RefreshCw, Zap, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { toPng } from "html-to-image";
@@ -312,21 +312,36 @@ function ResultContent() {
                         >
                             <Card className="bg-white/5 border-white/10 backdrop-blur-lg">
                                 <CardHeader>
-                                    <CardTitle className="text-white">📊 시장 데이터 (Market Data)</CardTitle>
+                                    <CardTitle className="text-white">📊 시장 분석 (Market Intelligence)</CardTitle>
                                 </CardHeader>
-                                <CardContent>
+                                <CardContent className="space-y-6">
                                     <div className="grid grid-cols-3 gap-4 text-center">
                                         <div className="p-4 rounded-xl bg-white/5">
                                             <div className="text-sm text-white/50 mb-1">시장 규모</div>
-                                            <div className="text-2xl font-bold text-white">{result.market.size}</div>
+                                            <div className="text-xl font-bold text-white">{result.market.size}</div>
                                         </div>
                                         <div className="p-4 rounded-xl bg-white/5">
                                             <div className="text-sm text-white/50 mb-1">성장성</div>
-                                            <div className="text-2xl font-bold text-green-400">{result.market.growth}</div>
+                                            <div className="text-xl font-bold text-green-400">{result.market.growth}</div>
                                         </div>
                                         <div className="p-4 rounded-xl bg-white/5">
                                             <div className="text-sm text-white/50 mb-1">경쟁 강도</div>
-                                            <div className="text-2xl font-bold text-yellow-400">{result.market.competition}</div>
+                                            <div className="text-xl font-bold text-yellow-400">{result.market.competition}</div>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-4 pt-4 border-t border-white/10">
+                                        <div>
+                                            <h4 className="text-purple-400 font-bold mb-1 flex items-center gap-2">
+                                                <TrendingUp className="w-4 h-4" /> 시장의 방향성
+                                            </h4>
+                                            <p className="text-white/70 text-sm leading-relaxed">{result.market.direction}</p>
+                                        </div>
+                                        <div>
+                                            <h4 className="text-pink-400 font-bold mb-1 flex items-center gap-2">
+                                                <Zap className="w-4 h-4" /> 핵심 가치 제안
+                                            </h4>
+                                            <p className="text-white/70 text-sm leading-relaxed">{result.market.value}</p>
                                         </div>
                                     </div>
                                 </CardContent>
@@ -399,89 +414,190 @@ function ResultContent() {
                     </Button>
                 </Link>
             </div>
+
             {/* Hidden Premium PDF Template - Rendered only for capture */}
             <div className="fixed -left-[9999px] -top-[9999px]">
                 <div
                     ref={pdfRef}
-                    className="w-[800px] bg-white p-16 text-slate-900 font-sans leading-relaxed"
+                    className="w-[800px] bg-white text-slate-900 font-sans leading-relaxed flex flex-col"
                 >
-                    {/* Header Branding */}
-                    <div className="flex justify-between items-center border-b-2 border-slate-900 pb-8 mb-12">
-                        <div className="flex items-center gap-3">
-                            <div className="bg-slate-900 text-white p-2 rounded-lg font-bold text-xl">S</div>
+                    {/* PAGE 1: COVER & EXECUTIVE SUMMARY */}
+                    <div className="min-h-[1100px] p-20 flex flex-col border-b-[20px] border-slate-900">
+                        {/* Header Branding */}
+                        <div className="flex justify-between items-center border-b-2 border-slate-900 pb-8 mb-24">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-slate-900 text-white p-2 rounded-lg font-bold text-2xl">S</div>
+                                <div>
+                                    <h2 className="text-2xl font-black uppercase tracking-tighter italic">StartGen AI</h2>
+                                    <p className="text-[11px] text-slate-500 font-bold tracking-[0.3em] uppercase">Confidential Strategy Report</p>
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.5em] mb-1">Issue Series: 2026-X</p>
+                                <p className="text-sm font-bold">{new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                            </div>
+                        </div>
+
+                        {/* Title Section */}
+                        <div className="flex-1 flex flex-col justify-center mb-20 px-4">
+                            <div className="inline-block bg-slate-900 text-white px-4 py-1.5 rounded-sm text-xs font-black mb-8 uppercase tracking-[0.4em] self-start">Premium Analysis</div>
+                            <h1 className="text-7xl font-black text-slate-900 leading-[1.1] mb-12 tracking-tighter">
+                                {result.title}
+                            </h1>
+                            <div className="h-2 w-48 bg-purple-600 mb-12" />
+                            <p className="text-3xl text-slate-500 font-medium leading-relaxed max-w-2xl italic italic">
+                                "{result.description}"
+                            </p>
+                        </div>
+
+                        {/* Why You Summary */}
+                        <div className="grid grid-cols-2 gap-12 mt-auto pt-16 border-t border-slate-100">
                             <div>
-                                <h2 className="text-xl font-black uppercase tracking-tighter">StartGen AI</h2>
-                                <p className="text-[10px] text-slate-500 font-medium">Strategic Startup Idea Generator</p>
+                                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Strategic Fit</h4>
+                                <ul className="space-y-3">
+                                    {result.whyYou.slice(0, 3).map((reason: string, idx: number) => (
+                                        <li key={idx} className="flex gap-3 text-sm font-bold text-slate-700">
+                                            <span className="text-purple-600">▪</span> {reason}
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
-                        </div>
-                        <div className="text-right">
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Confidential Report</p>
-                            <p className="text-xs font-medium">{new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                        </div>
-                    </div>
-
-                    {/* Cover Section */}
-                    <div className="mb-16">
-                        <div className="inline-block bg-purple-100 text-purple-700 px-3 py-1 rounded text-xs font-bold mb-4 uppercase tracking-widest">Premium Strategy</div>
-                        <h1 className="text-5xl font-black text-slate-900 leading-tight mb-6">
-                            {result.title}
-                        </h1>
-                        <p className="text-2xl text-slate-600 font-medium leading-relaxed border-l-4 border-slate-200 pl-6 py-2">
-                            {result.description}
-                        </p>
-                    </div>
-
-                    {/* Why You Section */}
-                    <div className="mb-12">
-                        <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400 mb-6 border-b border-slate-100 pb-2">Analysis: Why this fits you</h3>
-                        <div className="grid grid-cols-1 gap-4">
-                            {result.whyYou.map((reason: string, idx: number) => (
-                                <div key={idx} className="flex items-start gap-4 bg-slate-50 p-6 rounded-2xl">
-                                    <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold shrink-0">{idx + 1}</div>
-                                    <p className="text-lg font-medium text-slate-700 leading-snug pt-1">{reason}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Market Data Section */}
-                    <div className="mb-12">
-                        <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400 mb-6 border-b border-slate-100 pb-2">Market Environment</h3>
-                        <div className="grid grid-cols-3 gap-8">
-                            <div className="border-t-4 border-slate-900 pt-4">
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Market Size</p>
-                                <p className="text-3xl font-black text-slate-900">{result.market.size}</p>
-                            </div>
-                            <div className="border-t-4 border-green-500 pt-4">
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Growth Score</p>
-                                <p className="text-3xl font-black text-green-600">{result.market.growth}</p>
-                            </div>
-                            <div className="border-t-4 border-yellow-500 pt-4">
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Competition</p>
-                                <p className="text-3xl font-black text-slate-900">{result.market.competition}</p>
+                            <div className="flex flex-col justify-end text-right">
+                                <p className="text-[10px] text-slate-300 font-medium mb-1 italic">Generated by Alpha-Mind Engine v2.0</p>
+                                <p className="text-[10px] text-slate-900 font-bold uppercase tracking-widest leading-loose border-t border-slate-900 pt-2 inline-block ml-auto">CONFIDENTIAL FOR: PRO MEMBER</p>
                             </div>
                         </div>
                     </div>
 
-                    {/* Roadmap Section */}
-                    <div className="mb-16">
-                        <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400 mb-6 border-b border-slate-100 pb-2">8-Week Execution Roadmap</h3>
-                        <div className="space-y-4">
+                    {/* PAGE 2: MARKET INTELLIGENCE & DIRECTION */}
+                    <div className="min-h-[1123px] p-20 flex flex-col bg-slate-50">
+                        <div className="flex justify-between items-end border-b border-slate-200 pb-6 mb-16">
+                            <h2 className="text-4xl font-black text-slate-900 tracking-tighter">02 Market Intelligence</h2>
+                            <p className="text-[11px] font-black text-slate-300 uppercase tracking-widest">Section Analytics</p>
+                        </div>
+
+                        {/* Market Overview Grid */}
+                        <div className="grid grid-cols-3 gap-8 mb-16">
+                            <div className="bg-white p-8 rounded-2xl shadow-sm border-t-8 border-slate-900">
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Market Size</p>
+                                <p className="text-4xl font-black text-slate-900">{result.market.size}</p>
+                                <div className="mt-4 text-[11px] font-bold text-slate-400">Estimated Global Value</div>
+                            </div>
+                            <div className="bg-white p-8 rounded-2xl shadow-sm border-t-8 border-green-500">
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Growth Index</p>
+                                <p className="text-4xl font-black text-green-600">{result.market.growth}</p>
+                                <div className="mt-4 text-[11px] font-bold text-slate-400">Year-over-Year Projection</div>
+                            </div>
+                            <div className="bg-white p-8 rounded-2xl shadow-sm border-t-8 border-yellow-500">
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Competition</p>
+                                <p className="text-4xl font-black text-slate-900">{result.market.competition}</p>
+                                <div className="mt-4 text-[11px] font-bold text-slate-400">Relative Competitive Pressure</div>
+                            </div>
+                        </div>
+
+                        {/* Deep Analysis Panels */}
+                        <div className="space-y-12">
+                            <div className="bg-white p-10 rounded-3xl shadow-sm relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-purple-50 rounded-full -mr-16 -mt-16 opacity-50" />
+                                <h3 className="text-xl font-black text-slate-900 mb-6 flex items-center gap-3">
+                                    <div className="w-2 h-8 bg-purple-600" />
+                                    시장 동향 및 방향성 (Market Direction)
+                                </h3>
+                                <p className="text-xl text-slate-600 leading-[1.7] font-medium italic">
+                                    {result.market.direction}
+                                </p>
+                            </div>
+
+                            <div className="bg-white p-10 rounded-3xl shadow-sm relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-pink-50 rounded-full -mr-16 -mt-16 opacity-50" />
+                                <h3 className="text-xl font-black text-slate-900 mb-6 flex items-center gap-3">
+                                    <div className="w-2 h-8 bg-pink-600" />
+                                    핵심 가치 및 잠재력 (Economic Potential)
+                                </h3>
+                                <p className="text-xl text-slate-600 leading-[1.7] font-medium italic">
+                                    {result.market.value}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="mt-auto pt-8 text-[11px] font-bold text-slate-300 text-center uppercase tracking-widest">
+                            PRO Analysis | Report Page 02
+                        </div>
+                    </div>
+
+                    {/* PAGE 3: STRATEGIC ROADMAP */}
+                    <div className="min-h-[1123px] p-20 flex flex-col bg-white">
+                        <div className="flex justify-between items-end border-b border-slate-900 pb-6 mb-16">
+                            <h2 className="text-4xl font-black text-slate-900 tracking-tighter">03 Strategic Roadmap</h2>
+                            <p className="text-[11px] font-black text-slate-300 uppercase tracking-widest">Execution Timeline</p>
+                        </div>
+
+                        <div className="relative border-l-4 border-slate-100 ml-8 pl-12 space-y-12 py-4">
                             {result.roadmap.map((step: any, idx: number) => (
-                                <div key={idx} className="flex gap-6 items-start border-b border-slate-50 pb-4">
-                                    <div className="w-16 font-black text-purple-600 text-sm whitespace-nowrap">{step.week}</div>
-                                    <div className="text-lg font-medium text-slate-800">{step.task}</div>
+                                <div key={idx} className="relative">
+                                    <div className="absolute -left-[62px] top-0 w-12 h-12 bg-slate-900 rounded-full border-8 border-white flex items-center justify-center">
+                                        <div className="w-2 h-2 bg-white rounded-full" />
+                                    </div>
+                                    <div className="bg-slate-50 p-8 rounded-2xl border border-slate-100">
+                                        <div className="text-xs font-black text-purple-600 uppercase tracking-widest mb-2">{step.week}</div>
+                                        <div className="text-2xl font-black text-slate-900 mb-4">{step.task.split(':')[0]}</div>
+                                        <p className="text-lg text-slate-600 font-medium leading-relaxed">
+                                            {step.task.split(':')[1]}
+                                        </p>
+                                    </div>
                                 </div>
                             ))}
                         </div>
+
+                        <div className="mt-auto grid grid-cols-2 gap-20 pt-12">
+                            <div className="p-8 border-2 border-slate-100 rounded-2xl bg-slate-50/50">
+                                <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 italic">Next Step Focus</h4>
+                                <p className="text-sm font-bold text-slate-800 leading-relaxed">
+                                    위 로드맵은 MVP(최소 기능 제품) 검증에 최적화된 초기 8주 계획입니다. 4주차 검증 결과에 따라 피벗을 고려하십시오.
+                                </p>
+                            </div>
+                            <div className="flex flex-col justify-end text-right">
+                                <p className="text-[11px] font-bold text-slate-300 text-center uppercase tracking-widest">
+                                    Execution Strategy | Report Page 03
+                                </p>
+                            </div>
+                        </div>
                     </div>
 
-                    {/* Footer Disclaimer */}
-                    <div className="mt-20 pt-8 border-t border-slate-100 text-center">
-                        <p className="text-[10px] text-slate-400 font-medium px-20">
-                            본 리포트는 StartGen AI의 인공지능 분석 알고리즘을 통해 생성되었습니다. 제공되는 데이터는 시장 상황에 따라 변동될 수 있으며, 투자 및 사업 실행의 최종 결정 책임은 본인에게 있습니다.
-                        </p>
-                        <p className="text-[9px] text-slate-300 mt-4 tracking-widest uppercase">© 2026 STARTGEN AI GROUP ALL RIGHTS RESERVED - WWW.STARTGEN.AI</p>
+                    {/* PAGE 4: FOOTER & SIGNOFF */}
+                    <div className="min-h-[1123px] p-20 flex flex-col bg-slate-900 text-white">
+                        <h3 className="text-[12px] font-black uppercase tracking-[0.5em] text-slate-500 mb-20 text-center underline decoration-slate-700 underline-offset-8 decoration-4">Disclaimer & Final Notice</h3>
+
+                        <div className="flex-1 flex flex-col justify-center max-w-2xl mx-auto space-y-12">
+                            <div className="text-left space-y-4">
+                                <div className="text-3xl font-black italic mb-6">"시작하는 사람이 이깁니다."</div>
+                                <p className="text-lg text-slate-300 font-medium leading-[1.8]">
+                                    본 리포트는 StartGen AI의 인공지능 분석을 통해 작성되었습니다.
+                                    데이터의 정밀함보다 중요한 것은 실행의 속도입니다.
+                                    지금 바로 첫 번째 마일스톤(1주차)을 시작하시기 바랍니다.
+                                </p>
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-6 pt-12 border-t border-slate-800">
+                                <div className="text-[11px] text-slate-500 font-bold uppercase tracking-widest leading-[2]">
+                                    STARTGEN AI GROUP은 귀하의 도전을 응원합니다.
+                                    본 데이터는 일반적인 시장 통계와 트렌드를 기반으로 하며,
+                                    법률, 세무, 금융 및 현업의 특수한 사정에 따라 실제 결과는 달라질 수 있습니다.
+                                    최종적인 사업의 성패는 창업자의 의지와 시장과의 호흡에 달려 있음을 잊지 마십시오.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="mt-auto pt-12 text-center">
+                            <div className="flex justify-center gap-4 mb-8">
+                                <div className="w-12 h-1 bg-slate-800" />
+                                <div className="w-12 h-1 bg-purple-600" />
+                                <div className="w-12 h-1 bg-slate-800" />
+                            </div>
+                            <p className="text-[11px] text-slate-500 font-black tracking-[0.6em] uppercase">
+                                © 2026 STARTGEN AI GROUP ALL RIGHTS RESERVED - WWW.STARTGEN.AI
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
