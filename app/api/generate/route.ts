@@ -3,10 +3,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma"; // Import Prisma client
 
 // Use the existing GOOGLE_API_KEY
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
-
 export async function POST(request: NextRequest) {
   try {
+    const apiKey = process.env.GOOGLE_API_KEY;
+    if (!apiKey) {
+      throw new Error("GOOGLE_API_KEY is missing in environment variables");
+    }
+
+    // Initialize inside the handler to handle environment variable latency/absence safely
+    const genAI = new GoogleGenerativeAI(apiKey);
+
     const body = await request.json();
     // Map frontend fields to user code expectations
     const { location, ageGroup: age, mbti, occupation, budget, time: timeCommit, interests } = body;
