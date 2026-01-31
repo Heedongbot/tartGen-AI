@@ -182,24 +182,23 @@ function ResultContent() {
             });
 
             const pdf = new jsPDF("p", "mm", "a4");
-            const imgProps = pdf.getImageProperties(dataUrl);
             const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pageHeight = pdf.internal.pageSize.getHeight();
-            const totalHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            const pdfHeight = pdf.internal.pageSize.getHeight();
 
-            let heightLeft = totalHeight;
-            let position = 0;
+            // 📄 Query all page elements
+            const pages = pdfRef.current.querySelectorAll(".pdf-page");
 
-            // 📄 첫 번째 페이지 추가
-            pdf.addImage(dataUrl, "PNG", 0, position, pdfWidth, totalHeight);
-            heightLeft -= pageHeight;
+            for (let i = 0; i < pages.length; i++) {
+                const page = pages[i] as HTMLElement;
+                const canvas = await toPng(page, {
+                    cacheBust: true,
+                    backgroundColor: "#ffffff",
+                    pixelRatio: 2,
+                    quality: 1.0,
+                });
 
-            // 📄 콘텐츠가 더 있다면 다음 페이지들을 추가하며 잘라 붙임
-            while (heightLeft > 0) {
-                position = heightLeft - totalHeight;
-                pdf.addPage();
-                pdf.addImage(dataUrl, "PNG", 0, position, pdfWidth, totalHeight);
-                heightLeft -= pageHeight;
+                if (i > 0) pdf.addPage();
+                pdf.addImage(canvas, "PNG", 0, 0, pdfWidth, pdfHeight);
             }
 
             pdf.save(`StartGen_Premium_Report_${result?.title || "Idea"}.pdf`);
@@ -435,7 +434,7 @@ function ResultContent() {
                     className="w-[800px] bg-white text-slate-900 font-sans leading-relaxed flex flex-col"
                 >
                     {/* PAGE 1: COVER & EXECUTIVE SUMMARY */}
-                    <div className="p-20 flex flex-col border-b-[20px] border-slate-900 mb-8">
+                    <div className="pdf-page min-h-[1132px] p-20 flex flex-col border-b-[20px] border-slate-900 bg-white">
                         {/* Header Branding */}
                         <div className="flex justify-between items-center border-b-2 border-slate-900 pb-8 mb-24">
                             <div className="flex items-center gap-3">
@@ -483,7 +482,7 @@ function ResultContent() {
                     </div>
 
                     {/* PAGE 2: MARKET INTELLIGENCE & DIRECTION */}
-                    <div className="p-20 flex flex-col bg-slate-50 mb-8">
+                    <div className="pdf-page min-h-[1132px] p-20 flex flex-col bg-slate-50">
                         <div className="flex justify-between items-end border-b border-slate-200 pb-6 mb-16">
                             <h2 className="text-4xl font-black text-slate-900 tracking-tighter">02 Market Intelligence</h2>
                             <p className="text-[11px] font-black text-slate-300 uppercase tracking-widest">Section Analytics</p>
@@ -538,7 +537,7 @@ function ResultContent() {
                     </div>
 
                     {/* PAGE 3: STRATEGIC ROADMAP */}
-                    <div className="p-20 flex flex-col bg-white mb-8">
+                    <div className="pdf-page min-h-[1132px] p-20 flex flex-col bg-white">
                         <div className="flex justify-between items-end border-b border-slate-900 pb-6 mb-16">
                             <h2 className="text-4xl font-black text-slate-900 tracking-tighter">03 Strategic Roadmap</h2>
                             <p className="text-[11px] font-black text-slate-300 uppercase tracking-widest">Execution Timeline</p>
@@ -563,7 +562,7 @@ function ResultContent() {
                     </div>
 
                     {/* PAGE 4: FOOTER & SIGNOFF */}
-                    <div className="p-20 flex flex-col bg-slate-900 text-white">
+                    <div className="pdf-page min-h-[1132px] p-20 flex flex-col bg-slate-900 text-white">
                         <h3 className="text-[12px] font-black uppercase tracking-[0.5em] text-slate-500 mb-20 text-center underline decoration-slate-700 underline-offset-8 decoration-4">Disclaimer & Final Notice</h3>
 
                         <div className="flex-1 flex flex-col justify-center max-w-2xl mx-auto space-y-12 pb-20">
