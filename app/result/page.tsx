@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, Suspense, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { toPng } from "html-to-image";
 import jsPDF from "jspdf";
-import { Toaster, toast } from "sonner"; // Using Sonner for toasts (needs install if not present, checking)
+import { Toaster, toast } from "sonner";
+import { createClient } from "@/lib/supabase";
 
 // Type definition for the API response
 type GeneratedIdea = {
@@ -38,7 +39,10 @@ function ResultContent() {
     const dataParam = searchParams.get("data");
     const [loading, setLoading] = useState(true);
     const [result, setResult] = useState<GeneratedIdea | null>(null);
+    const [user, setUser] = useState<any>(null);
     const contentRef = useRef<HTMLDivElement>(null);
+    const supabase = createClient();
+    const router = useRouter();
 
     useEffect(() => {
         if (!dataParam) return;
@@ -74,7 +78,22 @@ function ResultContent() {
             }
         };
 
+        const checkUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            setUser(user);
+        };
+        checkUser();
+
+        // 실시간 세션 감지 추가
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUser(session?.user ?? null);
+        });
+
         fetchData();
+
+        return () => {
+            subscription.unsubscribe();
+        };
     }, [dataParam]);
 
     const handleShare = async () => {
@@ -83,21 +102,55 @@ function ResultContent() {
         if (navigator.share) {
             try {
                 await navigator.share({
-                    title: result?.title || "StartGen AI Idea",
-                    text: result?.description || "Check out this startup idea!",
+                    title: result?.title || "StartGen AI 아이디어",
+                    text: result?.description || "멋진 스타트업 아이디어를 확인해보세요!",
                     url: url
                 });
+                toast.success("공유창을 열었습니다.");
             } catch (err) {
-                console.log("Share canceled");
+                console.log("Share canceled", err);
             }
         } else {
-            // Fallback for desktop
-            navigator.clipboard.writeText(url);
-            toast.success("링크가 복사되었습니다!");
+            // Fallback for desktop/non-supporting browsers
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(url);
+                    toast.success("공유 링크가 클립보드에 복사되었습니다!");
+                } else {
+                    throw new Error("Clipboard API unavailable");
+                }
+            } catch (err) {
+                // Secondary fallback: hidden textarea method
+                const textArea = document.createElement("textarea");
+                textArea.value = url;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    toast.success("링크가 복사되었습니다! (Fallback)");
+                } catch (copyErr) {
+                    toast.error("공유 링크를 복사할 수 없습니다. URL을 직접 복사해주세요.");
+                }
+                document.body.removeChild(textArea);
+            }
         }
     };
 
     const handleDownloadPDF = async () => {
+        // 🔒 보안 강화: 세션 상태가 아닌 실시간 서버 체크를 한 번 더 수행
+        const { data: { user: freshUser } } = await supabase.auth.getUser();
+
+        if (!freshUser) {
+            toast.error("비정상적인 접근입니다. PDF 저장은 로그인 후에만 가능합니다.", {
+                description: "유료 기능 서비스 보호를 위해 로그인이 필요합니다.",
+                action: {
+                    label: "로그인",
+                    onClick: () => router.push("/login")
+                }
+            });
+            return;
+        }
+
         if (!contentRef.current) return;
 
         const loadingToast = toast.loading("PDF 생성 중...");
