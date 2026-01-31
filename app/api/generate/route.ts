@@ -105,6 +105,10 @@ export async function POST(request: NextRequest) {
     let rawData;
     try {
       rawData = JSON.parse(cleanedText);
+      // 🔥 AI가 리스트 형식을 반환했을 경우 (Gemini 2.0 특정 상황 대비)
+      if (Array.isArray(rawData)) {
+        rawData = rawData[0];
+      }
     } catch (parseError) {
       console.error("JSON Parse Failed:", cleanedText);
       throw new Error("AI 응답을 해석할 수 없습니다. (JSON Parsing Error)");
