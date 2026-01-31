@@ -5,11 +5,10 @@ import { prisma } from "@/lib/prisma"; // Import Prisma client
 // Use the existing GOOGLE_API_KEY
 export async function POST(request: NextRequest) {
   try {
-    // 🚨 EMERGENCY FIX: Harcoded key for immediate debugging (Will be removed later)
-    const apiKey = process.env.GOOGLE_API_KEY || "AIzaSyA-BJcZHBckk8_QmRMG-WXY2rY36xo9_6s";
+    const apiKey = process.env.GOOGLE_API_KEY;
 
     if (!apiKey) {
-      throw new Error("GOOGLE_API_KEY is missing (even fallback failed)");
+      throw new Error("GOOGLE_API_KEY is missing in environment variables");
     }
 
     // Initialize inside the handler to handle environment variable latency/absence safely
