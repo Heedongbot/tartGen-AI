@@ -15,9 +15,9 @@ const pricingPlans = [
         price: "0",
         description: "제품 체험 및 바이럴용",
         features: [
-            { text: "하루 3개 아이디어 생성", icon: <Sparkles className="w-4 h-4" /> },
-            { text: "기본 필터 (대륙, 성장속도, 시장규모)", icon: <SlidersHorizontal className="w-4 h-4" /> },
-            { text: "제품 추천 1개", icon: <Plus className="w-4 h-4" /> },
+            { text: "하루 3개 아이디어 생성", icon: <Sparkles className="w-4 h-4" />, disabled: false },
+            { text: "기본 필터 (대륙, 성장속도, 시장규모)", icon: <SlidersHorizontal className="w-4 h-4" />, disabled: false },
+            { text: "제품 추천 1개", icon: <Plus className="w-4 h-4" />, disabled: false },
             { text: "아이디어 저장 불가", icon: <Plus className="w-4 h-4 disabled" />, disabled: true },
         ],
         buttonText: "시작하기",
@@ -29,16 +29,16 @@ const pricingPlans = [
         priceYear: "99",
         description: "성장을 위한 모든 도구 포함",
         features: [
-            { text: "무제한 아이디어 생성", icon: <Zap className="w-4 h-4" /> },
-            { text: "모든 필터 (지역/나이/MBTI/직업 등)", icon: <SlidersHorizontal className="w-4 h-4" /> },
-            { text: "무제한 저장 & 관리", icon: <ShieldCheck className="w-4 h-4" /> },
-            { text: "상세 시장 데이터", icon: <BarChart3 className="w-4 h-4" /> },
-            { text: "MBTI 맞춤 로드맵", icon: <Clock className="w-4 h-4" /> },
-            { text: "제품 추천 10개 (제휴 링크)", icon: <Plus className="w-4 h-4" /> },
-            { text: "PDF 다운로드", icon: <Download className="w-4 h-4" /> },
-            { text: "AI 멘토 챗봇", icon: <MessageSquare className="w-4 h-4" /> },
-            { text: "광고 제거", icon: <Check className="w-4 h-4" /> },
-            { text: "24시간 전용 지원", icon: <Mail className="w-4 h-4" /> },
+            { text: "무제한 아이디어 생성", icon: <Zap className="w-4 h-4" />, disabled: false },
+            { text: "모든 필터 (지역/나이/MBTI/직업 등)", icon: <SlidersHorizontal className="w-4 h-4" />, disabled: false },
+            { text: "무제한 저장 & 관리", icon: <ShieldCheck className="w-4 h-4" />, disabled: false },
+            { text: "상세 시장 데이터", icon: <BarChart3 className="w-4 h-4" />, disabled: false },
+            { text: "MBTI 맞춤 로드맵", icon: <Clock className="w-4 h-4" />, disabled: false },
+            { text: "제품 추천 10개 (제휴 링크)", icon: <Plus className="w-4 h-4" />, disabled: false },
+            { text: "PDF 다운로드", icon: <Download className="w-4 h-4" />, disabled: false },
+            { text: "AI 멘토 챗봇", icon: <MessageSquare className="w-4 h-4" />, disabled: false },
+            { text: "광고 제거", icon: <Check className="w-4 h-4" />, disabled: false },
+            { text: "24시간 전용 지원", icon: <Mail className="w-4 h-4" />, disabled: false },
         ],
         buttonText: "무료 체험 시작하기",
         highlight: true,
@@ -131,8 +131,8 @@ export default function PricingPage() {
                                     <Link href={plan.highlight ? "/login" : "/"} className="w-full">
                                         <Button
                                             className={`w-full h-12 text-lg font-bold transition-all ${plan.highlight
-                                                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-lg shadow-purple-600/20'
-                                                    : 'bg-white/10 hover:bg-white/20 text-white'
+                                                ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-lg shadow-purple-600/20'
+                                                : 'bg-white/10 hover:bg-white/20 text-white'
                                                 }`}
                                         >
                                             {plan.buttonText}
