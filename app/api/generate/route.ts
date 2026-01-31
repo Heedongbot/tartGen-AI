@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
 
     // ✅ 핵심: JSON 모드 강제 설정 (User requested configuration)
     const model = genAI.getGenerativeModel({
-      model: "models/gemini-2.5-flash",  // User requested full path
+      model: "gemini-1.5-flash",  // Use stable model name
       generationConfig: {
         temperature: 0.6,                // 일관성을 위해 약간 낮춤
         topP: 0.8,
