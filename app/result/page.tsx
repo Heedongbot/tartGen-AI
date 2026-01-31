@@ -197,8 +197,24 @@ function ResultContent() {
                     quality: 1.0,
                 });
 
-                if (i > 0) pdf.addPage();
-                pdf.addImage(canvas, "PNG", 0, 0, pdfWidth, pdfHeight);
+                const imgProps = pdf.getImageProperties(canvas);
+                const renderedHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+                let heightLeft = renderedHeight;
+                let position = 0;
+
+                // 해당 섹션이 A4 1장을 넘어가면 여러 장에 걸쳐 추가
+                while (heightLeft > 0) {
+                    // 첫 섹션의 첫 페이지가 아닌 경우에만 새 페이지 추가
+                    if (i > 0 || position < 0) {
+                        pdf.addPage();
+                    }
+
+                    pdf.addImage(canvas, "PNG", 0, position, pdfWidth, renderedHeight);
+
+                    heightLeft -= pdfHeight;
+                    position -= pdfHeight;
+                }
             }
 
             pdf.save(`StartGen_Premium_Report_${result?.title || "Idea"}.pdf`);
