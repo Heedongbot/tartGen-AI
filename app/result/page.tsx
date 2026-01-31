@@ -435,7 +435,7 @@ function ResultContent() {
                     className="w-[800px] bg-white text-slate-900 font-sans leading-relaxed flex flex-col"
                 >
                     {/* PAGE 1: COVER & EXECUTIVE SUMMARY */}
-                    <div className="min-h-[1132px] p-20 flex flex-col border-b-[20px] border-slate-900">
+                    <div className="p-20 flex flex-col border-b-[20px] border-slate-900 mb-8">
                         {/* Header Branding */}
                         <div className="flex justify-between items-center border-b-2 border-slate-900 pb-8 mb-24">
                             <div className="flex items-center gap-3">
@@ -454,11 +454,11 @@ function ResultContent() {
                         {/* Title Section */}
                         <div className="flex-1 flex flex-col justify-center mb-20 px-4">
                             <div className="inline-block bg-slate-900 text-white px-4 py-1.5 rounded-sm text-xs font-black mb-8 uppercase tracking-[0.4em] self-start">Premium Analysis</div>
-                            <h1 className="text-7xl font-black text-slate-900 leading-[1.1] mb-12 tracking-tighter">
+                            <h1 className="text-5xl font-black text-slate-900 leading-[1.2] mb-12 tracking-tighter">
                                 {result.title}
                             </h1>
                             <div className="h-2 w-48 bg-purple-600 mb-12" />
-                            <p className="text-3xl text-slate-500 font-medium leading-relaxed max-w-2xl italic italic">
+                            <p className="text-xl text-slate-600 font-medium leading-[1.8] max-w-2xl italic">
                                 "{result.description}"
                             </p>
                         </div>
@@ -483,13 +483,12 @@ function ResultContent() {
                     </div>
 
                     {/* PAGE 2: MARKET INTELLIGENCE & DIRECTION */}
-                    <div className="min-h-[1132px] p-20 flex flex-col bg-slate-50">
+                    <div className="p-20 flex flex-col bg-slate-50 mb-8">
                         <div className="flex justify-between items-end border-b border-slate-200 pb-6 mb-16">
                             <h2 className="text-4xl font-black text-slate-900 tracking-tighter">02 Market Intelligence</h2>
                             <p className="text-[11px] font-black text-slate-300 uppercase tracking-widest">Section Analytics</p>
                         </div>
-
-                        {/* Market Overview Grid */}
+                        {/* ... Market overview grid ... */}
                         <div className="grid grid-cols-3 gap-8 mb-16">
                             <div className="bg-white p-8 rounded-2xl shadow-sm border-t-8 border-slate-900">
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Market Size</p>
@@ -516,7 +515,7 @@ function ResultContent() {
                                     <div className="w-2 h-8 bg-purple-600" />
                                     시장 동향 및 방향성 (Market Direction)
                                 </h3>
-                                <p className="text-xl text-slate-600 leading-[1.7] font-medium italic">
+                                <p className="text-lg text-slate-600 leading-[1.7] font-medium italic">
                                     {result.market.direction}
                                 </p>
                             </div>
@@ -527,19 +526,19 @@ function ResultContent() {
                                     <div className="w-2 h-8 bg-pink-600" />
                                     핵심 가치 및 잠재력 (Economic Potential)
                                 </h3>
-                                <p className="text-xl text-slate-600 leading-[1.7] font-medium italic">
+                                <p className="text-lg text-slate-600 leading-[1.7] font-medium italic">
                                     {result.market.value}
                                 </p>
                             </div>
                         </div>
 
-                        <div className="mt-auto pt-8 text-[11px] font-bold text-slate-300 text-center uppercase tracking-widest">
-                            PRO Analysis | Report Page 02
+                        <div className="mt-20 pt-8 border-t border-slate-100 text-[11px] font-bold text-slate-300 text-center uppercase tracking-widest">
+                            PRO Analysis | Report Analytics
                         </div>
                     </div>
 
                     {/* PAGE 3: STRATEGIC ROADMAP */}
-                    <div className="min-h-[1132px] p-20 flex flex-col bg-white">
+                    <div className="p-20 flex flex-col bg-white mb-8">
                         <div className="flex justify-between items-end border-b border-slate-900 pb-6 mb-16">
                             <h2 className="text-4xl font-black text-slate-900 tracking-tighter">03 Strategic Roadmap</h2>
                             <p className="text-[11px] font-black text-slate-300 uppercase tracking-widest">Execution Timeline</p>
@@ -561,27 +560,13 @@ function ResultContent() {
                                 </div>
                             ))}
                         </div>
-
-                        <div className="mt-auto grid grid-cols-2 gap-20 pt-12">
-                            <div className="p-8 border-2 border-slate-100 rounded-2xl bg-slate-50/50">
-                                <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 italic">Next Step Focus</h4>
-                                <p className="text-sm font-bold text-slate-800 leading-relaxed">
-                                    위 로드맵은 MVP(최소 기능 제품) 검증에 최적화된 초기 8주 계획입니다. 4주차 검증 결과에 따라 피벗을 고려하십시오.
-                                </p>
-                            </div>
-                            <div className="flex flex-col justify-end text-right">
-                                <p className="text-[11px] font-bold text-slate-300 text-center uppercase tracking-widest">
-                                    Execution Strategy | Report Page 03
-                                </p>
-                            </div>
-                        </div>
                     </div>
 
                     {/* PAGE 4: FOOTER & SIGNOFF */}
-                    <div className="min-h-[1132px] p-20 flex flex-col bg-slate-900 text-white">
+                    <div className="p-20 flex flex-col bg-slate-900 text-white">
                         <h3 className="text-[12px] font-black uppercase tracking-[0.5em] text-slate-500 mb-20 text-center underline decoration-slate-700 underline-offset-8 decoration-4">Disclaimer & Final Notice</h3>
 
-                        <div className="flex-1 flex flex-col justify-center max-w-2xl mx-auto space-y-12">
+                        <div className="flex-1 flex flex-col justify-center max-w-2xl mx-auto space-y-12 pb-20">
                             <div className="text-left space-y-4">
                                 <div className="text-3xl font-black italic mb-6">"시작하는 사람이 이깁니다."</div>
                                 <p className="text-lg text-slate-300 font-medium leading-[1.8]">
@@ -590,18 +575,18 @@ function ResultContent() {
                                     지금 바로 첫 번째 마일스톤(1주차)을 시작하시기 바랍니다.
                                 </p>
                             </div>
+                        </div>
 
-                            <div className="grid grid-cols-1 gap-6 pt-12 border-t border-slate-800">
-                                <div className="text-[11px] text-slate-500 font-bold uppercase tracking-widest leading-[2]">
-                                    STARTGEN AI GROUP은 귀하의 도전을 응원합니다.
-                                    본 데이터는 일반적인 시장 통계와 트렌드를 기반으로 하며,
-                                    법률, 세무, 금융 및 현업의 특수한 사정에 따라 실제 결과는 달라질 수 있습니다.
-                                    최종적인 사업의 성패는 창업자의 의지와 시장과의 호흡에 달려 있음을 잊지 마십시오.
-                                </div>
+                        <div className="grid grid-cols-1 gap-6 pt-12 border-t border-slate-800">
+                            <div className="text-[11px] text-slate-500 font-bold uppercase tracking-widest leading-[2]">
+                                STARTGEN AI GROUP은 귀하의 도전을 응원합니다.
+                                본 데이터는 일반적인 시장 통계와 트렌드를 기반으로 하며,
+                                법률, 세무, 금융 및 현업의 특수한 사정에 따라 실제 결과는 달라질 수 있습니다.
+                                최종적인 사업의 성패는 창업자의 의지와 시장과의 호흡에 달려 있음을 잊지 마십시오.
                             </div>
                         </div>
 
-                        <div className="mt-auto pt-12 text-center">
+                        <div className="mt-auto pt-24 text-center">
                             <div className="flex justify-center gap-4 mb-8">
                                 <div className="w-12 h-1 bg-slate-800" />
                                 <div className="w-12 h-1 bg-purple-600" />
