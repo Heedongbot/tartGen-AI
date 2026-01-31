@@ -68,7 +68,35 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="min-h-screen flex items-center justify-center p-4 flex-col gap-4">
+            {/* 🚨 환경 변수 진단 경고창 */}
+            {(!process.env.NEXT_PUBLIC_SUPABASE_URL ||
+                process.env.NEXT_PUBLIC_SUPABASE_URL.includes("placeholder") ||
+                !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="w-full max-w-md bg-red-500/10 border border-red-500/50 rounded-xl p-4 text-red-200"
+                    >
+                        <div className="flex items-center gap-2 mb-2 font-bold text-red-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><path d="M12 9v4" /><path d="M12 17h.01" /></svg>
+                            설정 오류 감지됨
+                        </div>
+                        <p className="text-sm mb-3">
+                            Supabase 환경 변수가 Vercel에 설정되지 않았습니다.<br />
+                            로그인이 작동하지 않습니다.
+                        </p>
+                        <div className="bg-black/30 p-2 rounded text-xs font-mono mb-2">
+                            URL: {process.env.NEXT_PUBLIC_SUPABASE_URL ? "설정됨" : "누락됨"}<br />
+                            KEY: {process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? "설정됨" : "누락됨"}
+                        </div>
+                        <p className="text-xs text-white/50">
+                            Vercel Settings {'>'} Environment Variables 메뉴에서<br />
+                            NEXT_PUBLIC_SUPABASE_URL 및 ANON_KEY를 추가하고 Redeploy 하세요.
+                        </p>
+                    </motion.div>
+                )}
+
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
