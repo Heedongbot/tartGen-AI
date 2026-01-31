@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -14,10 +14,20 @@ import { motion } from "framer-motion";
 export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [rememberMe, setRememberMe] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isSignUp, setIsSignUp] = useState(false);
     const router = useRouter();
     const supabase = createClient();
+
+    // 💾 아이디 저장 불러오기 (마운트 시)
+    useEffect(() => {
+        const savedEmail = localStorage.getItem("rememberedEmail");
+        if (savedEmail) {
+            setEmail(savedEmail);
+            setRememberMe(true);
+        }
+    }, []);
 
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -38,6 +48,14 @@ export default function LoginPage() {
                     password,
                 });
                 if (error) throw error;
+
+                // 💾 아이디 저장 체크 시 로컬 스토리지 저장
+                if (rememberMe) {
+                    localStorage.setItem("rememberedEmail", email);
+                } else {
+                    localStorage.removeItem("rememberedEmail");
+                }
+
                 toast.success("로그인 성공!");
                 router.push("/");
                 router.refresh();
@@ -95,6 +113,26 @@ export default function LoginPage() {
                                     />
                                 </div>
                             </div>
+
+                            {/* 💾 아이디 저장 체크박스 */}
+                            {!isSignUp && (
+                                <div className="flex items-center space-x-2 pb-2">
+                                    <input
+                                        type="checkbox"
+                                        id="remember"
+                                        checked={rememberMe}
+                                        onChange={(e) => setRememberMe(e.target.checked)}
+                                        className="w-4 h-4 rounded border-white/10 bg-white/5 text-purple-600 focus:ring-purple-500 cursor-pointer"
+                                    />
+                                    <label
+                                        htmlFor="remember"
+                                        className="text-sm font-medium text-white/60 cursor-pointer hover:text-white/80 transition-colors"
+                                    >
+                                        아이디 저장
+                                    </label>
+                                </div>
+                            )}
+
                             <Button
                                 type="submit"
                                 className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold h-11"

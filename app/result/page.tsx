@@ -197,25 +197,10 @@ function ResultContent() {
                     quality: 1.0,
                 });
 
-                const imgProps = pdf.getImageProperties(canvas);
-                const renderedHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                if (i > 0) pdf.addPage();
 
-                let heightLeft = renderedHeight;
-                let position = 0;
-
-                // 📄 해당 섹션이 A4 1장을 넘어가면 여러 장에 걸쳐 추가 (비율 보존)
-                while (heightLeft > 0) {
-                    // 첫 섹션의 첫 페이지가 아니거나, 현재 섹션 내에서 페이지가 넘어가는 경우 새 페이지 추가
-                    if (i > 0 || position < 0) {
-                        pdf.addPage();
-                    }
-
-                    // 0.1mm 정도의 미세한 오차를 줄이기 위해 height와 y 좌표를 정밀하게 계산
-                    pdf.addImage(canvas, "PNG", 0, position, pdfWidth, renderedHeight);
-
-                    heightLeft -= pdfHeight;
-                    position -= pdfHeight;
-                }
+                // 고정된 A4 크기(1132px)로 관리되므로 잘림 없이 1:1 매칭
+                pdf.addImage(canvas, "PNG", 0, 0, pdfWidth, pdfHeight);
             }
 
             pdf.save(`StartGen_Premium_Report_${result?.title || "Idea"}.pdf`);
@@ -451,7 +436,7 @@ function ResultContent() {
                     className="w-[800px] bg-white text-slate-900 font-sans leading-relaxed flex flex-col"
                 >
                     {/* PAGE 1: COVER & EXECUTIVE SUMMARY */}
-                    <div className="pdf-page min-h-[1132px] p-20 flex flex-col border-b-[20px] border-slate-900 bg-white">
+                    <div className="pdf-page h-[1132px] p-20 flex flex-col border-b-[20px] border-slate-900 bg-white overflow-hidden">
                         {/* Header Branding */}
                         <div className="flex justify-between items-center border-b-2 border-slate-900 pb-8 mb-24">
                             <div className="flex items-center gap-3">
@@ -474,7 +459,7 @@ function ResultContent() {
                                 {result.title}
                             </h1>
                             <div className="h-2 w-48 bg-purple-600 mb-12" />
-                            <p className="text-xl text-slate-600 font-medium leading-[1.8] max-w-2xl italic">
+                            <p className="text-lg text-slate-600 font-medium leading-[1.8] max-w-2xl italic">
                                 "{result.description}"
                             </p>
                         </div>
@@ -499,7 +484,7 @@ function ResultContent() {
                     </div>
 
                     {/* PAGE 2: MARKET INTELLIGENCE (Part 1 - Metrics) */}
-                    <div className="pdf-page min-h-[1132px] p-20 flex flex-col bg-slate-50">
+                    <div className="pdf-page h-[1132px] p-20 flex flex-col bg-slate-50 overflow-hidden">
                         <div className="flex justify-between items-end border-b border-slate-200 pb-6 mb-16">
                             <h2 className="text-4xl font-black text-slate-900 tracking-tighter">02 Market Intelligence</h2>
                             <p className="text-[11px] font-black text-slate-300 uppercase tracking-widest">Section Analytics</p>
@@ -530,7 +515,7 @@ function ResultContent() {
                                 <div className="w-2 h-8 bg-purple-600" />
                                 시장 동향 및 방향성 (Market Direction)
                             </h3>
-                            <p className="text-lg text-slate-600 leading-[1.7] font-medium italic">
+                            <p className="text-base text-slate-600 leading-[1.7] font-medium italic">
                                 {result.market.direction}
                             </p>
                         </div>
@@ -541,7 +526,7 @@ function ResultContent() {
                     </div>
 
                     {/* PAGE 3: MARKET INTELLIGENCE (Part 2 - Value) */}
-                    <div className="pdf-page min-h-[1132px] p-20 flex flex-col bg-slate-50">
+                    <div className="pdf-page h-[1132px] p-20 flex flex-col bg-slate-50 overflow-hidden">
                         <div className="flex justify-between items-end border-b border-slate-200 pb-6 mb-16">
                             <h2 className="text-4xl font-black text-slate-900 tracking-tighter">02 Market Intelligence</h2>
                             <p className="text-[11px] font-black text-slate-300 uppercase tracking-widest">Economic Potential</p>
@@ -553,7 +538,7 @@ function ResultContent() {
                                 <div className="w-2 h-8 bg-pink-600" />
                                 핵심 가치 및 잠재력 (Economic Potential)
                             </h3>
-                            <p className="text-lg text-slate-600 leading-[1.7] font-medium italic">
+                            <p className="text-base text-slate-600 leading-[1.7] font-medium italic">
                                 {result.market.value}
                             </p>
                         </div>
@@ -571,7 +556,7 @@ function ResultContent() {
                     </div>
 
                     {/* PAGE 4: STRATEGIC ROADMAP (Weeks 1-4) */}
-                    <div className="pdf-page min-h-[1132px] p-20 flex flex-col bg-white">
+                    <div className="pdf-page h-[1132px] p-20 flex flex-col bg-white overflow-hidden">
                         <div className="flex justify-between items-end border-b border-slate-900 pb-6 mb-16">
                             <h2 className="text-4xl font-black text-slate-900 tracking-tighter">04 Strategic Roadmap</h2>
                             <p className="text-[11px] font-black text-slate-300 uppercase tracking-widest">Implementation Phase I</p>
@@ -599,7 +584,7 @@ function ResultContent() {
                     </div>
 
                     {/* PAGE 5: STRATEGIC ROADMAP (Weeks 5-8) */}
-                    <div className="pdf-page min-h-[1132px] p-20 flex flex-col bg-white">
+                    <div className="pdf-page h-[1132px] p-20 flex flex-col bg-white overflow-hidden">
                         <div className="flex justify-between items-end border-b border-slate-900 pb-6 mb-16">
                             <h2 className="text-4xl font-black text-slate-900 tracking-tighter">04 Strategic Roadmap</h2>
                             <p className="text-[11px] font-black text-slate-300 uppercase tracking-widest">Implementation Phase II</p>
@@ -631,8 +616,8 @@ function ResultContent() {
                         </div>
                     </div>
 
-                    {/* PAGE 4: FOOTER & SIGNOFF */}
-                    <div className="pdf-page min-h-[1132px] p-20 flex flex-col bg-slate-900 text-white">
+                    {/* PAGE 6: FOOTER & SIGNOFF */}
+                    <div className="pdf-page h-[1132px] p-20 flex flex-col bg-slate-900 text-white overflow-hidden">
                         <h3 className="text-[12px] font-black uppercase tracking-[0.5em] text-slate-500 mb-20 text-center underline decoration-slate-700 underline-offset-8 decoration-4">Disclaimer & Final Notice</h3>
 
                         <div className="flex-1 flex flex-col justify-center max-w-2xl mx-auto space-y-12 pb-20">
