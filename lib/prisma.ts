@@ -10,13 +10,7 @@ let prismaInstance: any = undefined;
 
 if (isValidPostgres) {
     try {
-        prismaInstance = new PrismaClient({
-            datasources: {
-                db: {
-                    url: connectionString,
-                },
-            },
-        });
+        prismaInstance = new PrismaClient();
     } catch (e) {
         console.warn("Failed to initialize PrismaClient:", e);
     }
