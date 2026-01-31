@@ -47,14 +47,14 @@ export function Header() {
                     </span>
                 </Link>
                 <nav className="hidden md:flex gap-6">
-                    {["About", "Pricing", "Blog", "Contact"].map((item) => (
+                    <Link href="/pricing" className={cn("text-sm font-medium transition-colors hover:text-white", pathname === "/pricing" ? "text-white" : "text-white/60")}>
+                        Pricing
+                    </Link>
+                    {["About", "Blog", "Contact"].map((item) => (
                         <Link
                             key={item}
                             href="#"
-                            className={cn(
-                                "text-sm font-medium transition-colors hover:text-white",
-                                pathname === "/" ? "text-white/60" : "text-white/60"
-                            )}
+                            className="text-sm font-medium text-white/60 transition-colors hover:text-white"
                         >
                             {item}
                         </Link>

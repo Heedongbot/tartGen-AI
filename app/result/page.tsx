@@ -97,6 +97,20 @@ function ResultContent() {
     }, [dataParam]);
 
     const handleShare = async () => {
+        // 🔒 보안 강화: 공유 기능도 로그인체크 수행
+        const { data: { user: freshUser } } = await supabase.auth.getUser();
+
+        if (!freshUser) {
+            toast.error("공유 기능은 로그인 후에 이용 가능합니다.", {
+                description: "아이디어 보호를 위해 로그인이 필요합니다.",
+                action: {
+                    label: "로그인",
+                    onClick: () => router.push("/login")
+                }
+            });
+            return;
+        }
+
         const url = window.location.href;
 
         if (navigator.share) {
