@@ -94,12 +94,21 @@ export async function POST(request: NextRequest) {
 
     console.log("🔍 Gemini JSON Response:", responseText.substring(0, 200) + "...");
 
-    // JSON 모드 사용으로 직접 파싱 가능
-    const rawData = JSON.parse(responseText);
+    // Sanitize the response (remove Markdown code blocks if present)
+    const cleanedText = responseText.replace(/```json/g, "").replace(/```/g, "").trim();
+
+    let rawData;
+    try {
+      rawData = JSON.parse(cleanedText);
+    } catch (parseError) {
+      console.error("JSON Parse Failed:", cleanedText);
+      throw new Error("AI 응답을 해석할 수 없습니다. (JSON Parsing Error)");
+    }
 
     // 기본 검증
-    if (!rawData.title || !rawData.description) {
-      throw new Error("필수 필드 누락: title 또는 description");
+    if (!rawData.title) {
+      console.error("Missing Title. Raw Data:", rawData);
+      throw new Error(`필수 필드 누락: title (받은 데이터: ${JSON.stringify(rawData).substring(0, 100)}...)`);
     }
 
     // 🔄 Compatibility Adapter: Transform new AI Data to match Existing Frontend UI
