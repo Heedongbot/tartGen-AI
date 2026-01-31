@@ -59,10 +59,16 @@ function ResultContent() {
                 }
 
                 const data = await res.json();
+
+                if (data.error) {
+                    throw new Error(data.details || data.error);
+                }
+
                 setResult(data);
-            } catch (error) {
+            } catch (error: any) {
                 console.error("Failed to generate idea", error);
-                alert("AI 생성 중 오류가 발생했습니다. (상세 내용은 콘솔 확인)");
+                // Show the actual error message from the API
+                alert(`오류가 발생했습니다: ${error.message}`);
             } finally {
                 setLoading(false);
             }
