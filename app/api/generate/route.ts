@@ -22,7 +22,19 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     // Map frontend fields to user code expectations
-    const { location, ageGroup: age, mbti, occupation, budget, time: timeCommit, interests } = body;
+    const {
+      continent,
+      growthSpeed,
+      marketSize,
+      location,
+      ageGroup: age,
+      mbti,
+      occupation,
+      budget,
+      time: timeCommit,
+      interests,
+      tier
+    } = body;
 
     // ✅ 핵심: JSON 모드 강제 설정 (User requested configuration)
     const model = genAI.getGenerativeModel({
@@ -38,14 +50,21 @@ export async function POST(request: NextRequest) {
     const prompt = `
 당신은 글로벌 창업 전문가입니다.
 
-사용자 프로필:
-- 위치: ${location}
-- 나이: ${age}
-- MBTI: ${mbti}
-- 직업: ${occupation || "미제공"}
-- 예산: ${budget || "미제공"}
-- 시간: ${timeCommit || "미제공"}
-- 관심사: ${interests?.join(", ") || "미제공"}
+창업 시장 설정 (기본):
+- 타겟 대륙: ${continent || "미지정 (Global)"}
+- 희망 성장 속도: ${growthSpeed || "Moderate"}
+- 시장 규모: ${marketSize || "Medium"}
+
+사용자 개인 프로필 (PRO 전용 - 제공된 경우에만 반영):
+- 위치: ${location || "미공개"}
+- 나이: ${age || "미공개"}
+- MBTI: ${mbti || "미공개"}
+- 직업: ${occupation || "미공개"}
+- 예산: ${budget || "미공개"}
+- 시간: ${timeCommit || "미공개"}
+- 관심사: ${interests?.join(", ") || "미공개"}
+
+요금제 등급: ${tier || "FREE"}
 
 다음 JSON 스키마에 맞춰 창업 아이디어를 생성하세요:
 
@@ -168,6 +187,12 @@ export async function POST(request: NextRequest) {
             budget: typeof budget === 'number' ? budget : parseInt(budget as string) || 0,
             timeCommit: timeCommit || "",
             interests: interests || [],
+
+            // New Market Settings (Tiered)
+            continent: continent || "Global",
+            growthSpeed: growthSpeed || "Moderate",
+            marketSize: marketSize || "Medium",
+            tier: tier || "FREE",
 
             // Generated Content
             title: normalizedData.title,

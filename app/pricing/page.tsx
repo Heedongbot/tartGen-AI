@@ -30,7 +30,7 @@ const pricingPlans = [
         description: "성장을 위한 모든 도구 포함",
         features: [
             { text: "무제한 아이디어 생성", icon: <Zap className="w-4 h-4" />, disabled: false },
-            { text: "모든 필터 (지역/나이/MBTI/직업 등)", icon: <SlidersHorizontal className="w-4 h-4" />, disabled: false },
+            { text: "모든 필터 (지역/나이/MBTI/직업/예산/시간/관심사)", icon: <SlidersHorizontal className="w-4 h-4" />, disabled: false },
             { text: "무제한 저장 & 관리", icon: <ShieldCheck className="w-4 h-4" />, disabled: false },
             { text: "상세 시장 데이터", icon: <BarChart3 className="w-4 h-4" />, disabled: false },
             { text: "MBTI 맞춤 로드맵", icon: <Clock className="w-4 h-4" />, disabled: false },

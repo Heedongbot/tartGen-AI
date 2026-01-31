@@ -28,6 +28,12 @@ model Idea {
   timeCommit  String
   interests   String[]
   
+  // New Market Settings (Tiered)
+  continent   String?
+  growthSpeed String?
+  marketSize  String?
+  tier        String?  @default("FREE")
+  
   // Generated content
   title       String
   description String   @db.Text

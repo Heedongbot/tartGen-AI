@@ -4,7 +4,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, Suspense, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, ArrowRight, Download, Share2, RefreshCw, Check } from "lucide-react";
+import { Loader2, ArrowRight, Download, Share2, RefreshCw, Check, Zap } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { toPng } from "html-to-image";
@@ -214,6 +214,41 @@ function ResultContent() {
     return (
         <div className="container mx-auto px-4 py-8 max-w-5xl space-y-8">
             <Toaster position="top-center" richColors />
+
+            {/* Upsell Banner for FREE Users */}
+            {(() => {
+                try {
+                    const params = JSON.parse(decodeURIComponent(dataParam || "{}"));
+                    if (params.tier === "FREE") {
+                        return (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="relative overflow-hidden p-6 rounded-2xl border border-purple-500/30 bg-gradient-to-r from-purple-900/40 to-pink-900/40 backdrop-blur-xl mb-8 group"
+                            >
+                                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                    <Zap className="w-24 h-24 text-white" />
+                                </div>
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+                                    <div className="space-y-2">
+                                        <div className="inline-flex items-center gap-2 px-2 py-0.5 rounded-full bg-white/10 border border-white/20 text-[10px] font-bold text-white tracking-widest uppercase">Limited Suggestion</div>
+                                        <h3 className="text-2xl font-bold text-white">더 정교한 분석이 필요하신가요? 🚀</h3>
+                                        <p className="text-white/60 text-sm max-w-xl">
+                                            현재 <b>FREE 요금제</b>로 생성된 기본 아이디어입니다. PRO 플랜으로 업그레이드하고 MBTI, 자본금, 상세 거주지를 반영한 <b>초개인화 창업 로드맵</b>과 <b>실시간 시장 데이터</b>를 확인하세요.
+                                        </p>
+                                    </div>
+                                    <Link href="/pricing" className="shrink-0 w-full md:w-auto">
+                                        <Button className="w-full bg-white text-purple-900 hover:bg-white/90 font-bold border-0 shadow-xl shadow-white/10">
+                                            PRO 업그레이드 <ArrowRight className="ml-2 w-4 h-4" />
+                                        </Button>
+                                    </Link>
+                                </div>
+                            </motion.div>
+                        );
+                    }
+                } catch (e) { }
+                return null;
+            })()}
 
             {/* Header Section */}
             <motion.div

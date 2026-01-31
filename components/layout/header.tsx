@@ -63,6 +63,9 @@ export function Header() {
                 <div className="flex items-center gap-4">
                     {user ? (
                         <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2 px-2 py-1 rounded-full bg-purple-500/20 border border-purple-500/30">
+                                <span className="text-[10px] font-bold text-purple-300">PRO</span>
+                            </div>
                             <span className="text-sm text-white/60 hidden sm:inline-block">
                                 {user.email?.split("@")[0]}님
                             </span>
