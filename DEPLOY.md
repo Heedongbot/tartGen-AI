@@ -12,7 +12,7 @@
 3.  **코드 업로드 (터미널)**:
     이 프로젝트가 있는 폴더에서 아래 명령어를 차례대로 실행하세요:
     ```bash
-    git remote add origin [방금_만든_리포지토리_주소]
+    git remote add origin [https://github.com/Heedongbot/tartGen-AI]
     git add .
     git commit -m "Initial deploy"
     git push -u origin main
