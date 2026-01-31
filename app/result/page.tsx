@@ -197,24 +197,10 @@ function ResultContent() {
                     quality: 1.0,
                 });
 
-                const imgProps = pdf.getImageProperties(canvas);
-                const renderedHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                if (i > 0) pdf.addPage();
 
-                let heightLeft = renderedHeight;
-                let position = 0;
-
-                // 해당 섹션이 A4 1장을 넘어가면 여러 장에 걸쳐 추가
-                while (heightLeft > 0) {
-                    // 첫 섹션의 첫 페이지가 아닌 경우에만 새 페이지 추가
-                    if (i > 0 || position < 0) {
-                        pdf.addPage();
-                    }
-
-                    pdf.addImage(canvas, "PNG", 0, position, pdfWidth, renderedHeight);
-
-                    heightLeft -= pdfHeight;
-                    position -= pdfHeight;
-                }
+                // 각 페이지가 정확히 A4 비율로 렌더링되도록 삽입
+                pdf.addImage(canvas, "PNG", 0, 0, pdfWidth, pdfHeight);
             }
 
             pdf.save(`StartGen_Premium_Report_${result?.title || "Idea"}.pdf`);
@@ -497,13 +483,13 @@ function ResultContent() {
                         </div>
                     </div>
 
-                    {/* PAGE 2: MARKET INTELLIGENCE & DIRECTION */}
+                    {/* PAGE 2: MARKET INTELLIGENCE (Part 1 - Metrics) */}
                     <div className="pdf-page min-h-[1132px] p-20 flex flex-col bg-slate-50">
                         <div className="flex justify-between items-end border-b border-slate-200 pb-6 mb-16">
                             <h2 className="text-4xl font-black text-slate-900 tracking-tighter">02 Market Intelligence</h2>
                             <p className="text-[11px] font-black text-slate-300 uppercase tracking-widest">Section Analytics</p>
                         </div>
-                        {/* ... Market overview grid ... */}
+                        {/* Market Overview Grid */}
                         <div className="grid grid-cols-3 gap-8 mb-16">
                             <div className="bg-white p-8 rounded-2xl shadow-sm border-t-8 border-slate-900">
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Market Size</p>
@@ -522,45 +508,62 @@ function ResultContent() {
                             </div>
                         </div>
 
-                        {/* Deep Analysis Panels */}
-                        <div className="space-y-12">
-                            <div className="bg-white p-10 rounded-3xl shadow-sm relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-purple-50 rounded-full -mr-16 -mt-16 opacity-50" />
-                                <h3 className="text-xl font-black text-slate-900 mb-6 flex items-center gap-3">
-                                    <div className="w-2 h-8 bg-purple-600" />
-                                    시장 동향 및 방향성 (Market Direction)
-                                </h3>
-                                <p className="text-lg text-slate-600 leading-[1.7] font-medium italic">
-                                    {result.market.direction}
-                                </p>
-                            </div>
-
-                            <div className="bg-white p-10 rounded-3xl shadow-sm relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-pink-50 rounded-full -mr-16 -mt-16 opacity-50" />
-                                <h3 className="text-xl font-black text-slate-900 mb-6 flex items-center gap-3">
-                                    <div className="w-2 h-8 bg-pink-600" />
-                                    핵심 가치 및 잠재력 (Economic Potential)
-                                </h3>
-                                <p className="text-lg text-slate-600 leading-[1.7] font-medium italic">
-                                    {result.market.value}
-                                </p>
-                            </div>
+                        {/* Deep Analysis Panel 1 */}
+                        <div className="bg-white p-10 rounded-3xl shadow-sm relative overflow-hidden flex-1">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-50 rounded-full -mr-16 -mt-16 opacity-50" />
+                            <h3 className="text-xl font-black text-slate-900 mb-6 flex items-center gap-3">
+                                <div className="w-2 h-8 bg-purple-600" />
+                                시장 동향 및 방향성 (Market Direction)
+                            </h3>
+                            <p className="text-lg text-slate-600 leading-[1.7] font-medium italic">
+                                {result.market.direction}
+                            </p>
                         </div>
 
-                        <div className="mt-20 pt-8 border-t border-slate-100 text-[11px] font-bold text-slate-300 text-center uppercase tracking-widest">
-                            PRO Analysis | Report Analytics
+                        <div className="mt-8 pt-8 border-t border-slate-100 text-[11px] font-bold text-slate-300 text-center uppercase tracking-widest">
+                            PRO Analysis | Report Page 02
                         </div>
                     </div>
 
-                    {/* PAGE 3: STRATEGIC ROADMAP */}
-                    <div className="pdf-page min-h-[1132px] p-20 flex flex-col bg-white">
-                        <div className="flex justify-between items-end border-b border-slate-900 pb-6 mb-16">
-                            <h2 className="text-4xl font-black text-slate-900 tracking-tighter">03 Strategic Roadmap</h2>
-                            <p className="text-[11px] font-black text-slate-300 uppercase tracking-widest">Execution Timeline</p>
+                    {/* PAGE 3: MARKET INTELLIGENCE (Part 2 - Value) */}
+                    <div className="pdf-page min-h-[1132px] p-20 flex flex-col bg-slate-50">
+                        <div className="flex justify-between items-end border-b border-slate-200 pb-6 mb-16">
+                            <h2 className="text-4xl font-black text-slate-900 tracking-tighter">02 Market Intelligence</h2>
+                            <p className="text-[11px] font-black text-slate-300 uppercase tracking-widest">Economic Potential</p>
                         </div>
 
-                        <div className="relative border-l-4 border-slate-100 ml-8 pl-12 space-y-12 py-4">
-                            {result.roadmap.map((step: any, idx: number) => (
+                        <div className="bg-white p-10 rounded-3xl shadow-sm relative overflow-hidden flex-1 mb-12">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-pink-50 rounded-full -mr-16 -mt-16 opacity-50" />
+                            <h3 className="text-xl font-black text-slate-900 mb-6 flex items-center gap-3">
+                                <div className="w-2 h-8 bg-pink-600" />
+                                핵심 가치 및 잠재력 (Economic Potential)
+                            </h3>
+                            <p className="text-lg text-slate-600 leading-[1.7] font-medium italic">
+                                {result.market.value}
+                            </p>
+                        </div>
+
+                        <div className="p-8 border-2 border-slate-200 rounded-2xl bg-white/50">
+                            <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 italic">Strategic Insight</h4>
+                            <p className="text-sm font-bold text-slate-800 leading-relaxed">
+                                위 가치 제안은 현재 시장의 결핍 요소와 사용자의 페인포인트를 결합하여 도출되었습니다. 초기 타겟 고객군 설정 시 위 잠재 가치를 핵심 메시지로 활용하십시오.
+                            </p>
+                        </div>
+
+                        <div className="mt-auto pt-8 border-t border-slate-100 text-[11px] font-bold text-slate-300 text-center uppercase tracking-widest">
+                            PRO Analysis | Report Page 03
+                        </div>
+                    </div>
+
+                    {/* PAGE 4: STRATEGIC ROADMAP (Weeks 1-4) */}
+                    <div className="pdf-page min-h-[1132px] p-20 flex flex-col bg-white">
+                        <div className="flex justify-between items-end border-b border-slate-900 pb-6 mb-16">
+                            <h2 className="text-4xl font-black text-slate-900 tracking-tighter">04 Strategic Roadmap</h2>
+                            <p className="text-[11px] font-black text-slate-300 uppercase tracking-widest">Implementation Phase I</p>
+                        </div>
+
+                        <div className="relative border-l-4 border-slate-100 ml-8 pl-12 space-y-12 py-4 flex-1">
+                            {result.roadmap.slice(0, 4).map((step: any, idx: number) => (
                                 <div key={idx} className="relative">
                                     <div className="absolute -left-[62px] top-0 w-12 h-12 bg-slate-900 rounded-full border-8 border-white flex items-center justify-center">
                                         <div className="w-2 h-2 bg-white rounded-full" />
@@ -574,6 +577,42 @@ function ResultContent() {
                                     </div>
                                 </div>
                             ))}
+                        </div>
+                        <div className="mt-auto pt-8 border-t border-slate-100 text-[11px] font-bold text-slate-300 text-center uppercase tracking-widest">
+                            Execution Strategy | Report Page 04
+                        </div>
+                    </div>
+
+                    {/* PAGE 5: STRATEGIC ROADMAP (Weeks 5-8) */}
+                    <div className="pdf-page min-h-[1132px] p-20 flex flex-col bg-white">
+                        <div className="flex justify-between items-end border-b border-slate-900 pb-6 mb-16">
+                            <h2 className="text-4xl font-black text-slate-900 tracking-tighter">04 Strategic Roadmap</h2>
+                            <p className="text-[11px] font-black text-slate-300 uppercase tracking-widest">Implementation Phase II</p>
+                        </div>
+
+                        <div className="relative border-l-4 border-slate-100 ml-8 pl-12 space-y-12 py-4 flex-1">
+                            {result.roadmap.slice(4, 8).map((step: any, idx: number) => (
+                                <div key={idx} className="relative">
+                                    <div className="absolute -left-[62px] top-0 w-12 h-12 bg-slate-900 rounded-full border-8 border-white flex items-center justify-center">
+                                        <div className="w-2 h-2 bg-white rounded-full" />
+                                    </div>
+                                    <div className="bg-slate-50 p-8 rounded-2xl border border-slate-100">
+                                        <div className="text-xs font-black text-purple-600 uppercase tracking-widest mb-2">{step.week}</div>
+                                        <div className="text-2xl font-black text-slate-900 mb-4">{step.task.split(':')[0]}</div>
+                                        <p className="text-lg text-slate-600 font-medium leading-relaxed">
+                                            {step.task.split(':')[1]}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="mt-auto p-8 border-2 border-slate-100 rounded-2xl bg-slate-50/50 mb-8 font-bold text-sm">
+                            위 로드맵은 MVP(최소 기능 제품) 검증에 최적화된 초기 8주 계획입니다. 4주차 검증 결과에 따라 피벗을 고려하십시오.
+                        </div>
+
+                        <div className="pt-8 border-t border-slate-100 text-[11px] font-bold text-slate-300 text-center uppercase tracking-widest">
+                            Execution Strategy | Report Page 05
                         </div>
                     </div>
 
