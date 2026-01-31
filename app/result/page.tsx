@@ -38,9 +38,10 @@ function ResultContent() {
     const searchParams = useSearchParams();
     const dataParam = searchParams.get("data");
     const [loading, setLoading] = useState(true);
-    const [result, setResult] = useState<GeneratedIdea | null>(null);
+    const [result, setResult] = useState<any>(null);
     const [user, setUser] = useState<any>(null);
     const contentRef = useRef<HTMLDivElement>(null);
+    const pdfRef = useRef<HTMLDivElement>(null);
     const supabase = createClient();
     const router = useRouter();
 
@@ -165,17 +166,19 @@ function ResultContent() {
             return;
         }
 
-        if (!contentRef.current) return;
+        if (!pdfRef.current) return;
 
-        const loadingToast = toast.loading("PDF 생성 중...");
+        const loadingToast = toast.loading("프리미엄 리포트 생성 중...");
 
         try {
-            // Add a small delay to ensure fonts are loaded
-            await new Promise((resolve) => setTimeout(resolve, 100));
+            // Add a small delay to ensure fonts and styles are settled
+            await new Promise((resolve) => setTimeout(resolve, 500));
 
-            const dataUrl = await toPng(contentRef.current, {
+            const dataUrl = await toPng(pdfRef.current, {
                 cacheBust: true,
-                backgroundColor: "#1a0b2e", // Match dark theme bg
+                backgroundColor: "#ffffff", // Professional white background for PDF
+                pixelRatio: 2, // High resolution
+                quality: 1.0,
             });
 
             const pdf = new jsPDF("p", "mm", "a4");
@@ -183,15 +186,17 @@ function ResultContent() {
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
+            // Handle multi-page if height exceeds A4 (simplified for now as a long image)
+            // For a really premium feel, we should split it, but capturing as one long high-res image is often better for simple reports.
             pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
-            pdf.save(`StartGen-${result?.title || "Idea"}.pdf`);
+            pdf.save(`StartGen_Premium_Report_${result?.title || "Idea"}.pdf`);
 
             toast.dismiss(loadingToast);
-            toast.success("PDF가 저장되었습니다!");
+            toast.success("프리미엄 PDF 리포트가 저장되었습니다!");
         } catch (error) {
             console.error("PDF Fail:", error);
             toast.dismiss(loadingToast);
-            toast.error("PDF 생성 실패 (관리자 문의)");
+            toast.error("리포트 생성 실패 (관리자 문의)");
         }
     };
 
@@ -290,7 +295,7 @@ function ResultContent() {
                                     <CardTitle className="text-white">✨ 나에게 맞는 이유 (Why You?)</CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
-                                    {result.whyYou.map((reason, idx) => (
+                                    {result.whyYou.map((reason: string, idx: number) => (
                                         <div key={idx} className="flex gap-3 text-white/80">
                                             <div className="min-w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center text-green-400 text-sm">✓</div>
                                             <p>{reason}</p>
@@ -339,7 +344,7 @@ function ResultContent() {
                                 </CardHeader>
                                 <CardContent>
                                     <div className="space-y-4">
-                                        {result.roadmap.map((step, idx) => (
+                                        {result.roadmap.map((step: { week: string, task: string }, idx: number) => (
                                             <div key={idx} className="flex gap-4 items-start">
                                                 <div className="min-w-[4rem] text-sm font-bold text-purple-400 pt-1">{step.week}</div>
                                                 <div className="text-white/80">{step.task}</div>
@@ -364,7 +369,7 @@ function ResultContent() {
                                     <CardDescription className="text-white/50">시작에 필요한 필수 서비스</CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
-                                    {result.products.map((product, idx) => (
+                                    {result.products.map((product: any, idx: number) => (
                                         <a
                                             key={idx}
                                             href={product.link}
@@ -393,6 +398,92 @@ function ResultContent() {
                         <RefreshCw className="w-4 h-4" /> 다시 아이디어 생성하기
                     </Button>
                 </Link>
+            </div>
+            {/* Hidden Premium PDF Template - Rendered only for capture */}
+            <div className="fixed -left-[9999px] -top-[9999px]">
+                <div
+                    ref={pdfRef}
+                    className="w-[800px] bg-white p-16 text-slate-900 font-sans leading-relaxed"
+                >
+                    {/* Header Branding */}
+                    <div className="flex justify-between items-center border-b-2 border-slate-900 pb-8 mb-12">
+                        <div className="flex items-center gap-3">
+                            <div className="bg-slate-900 text-white p-2 rounded-lg font-bold text-xl">S</div>
+                            <div>
+                                <h2 className="text-xl font-black uppercase tracking-tighter">StartGen AI</h2>
+                                <p className="text-[10px] text-slate-500 font-medium">Strategic Startup Idea Generator</p>
+                            </div>
+                        </div>
+                        <div className="text-right">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Confidential Report</p>
+                            <p className="text-xs font-medium">{new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                        </div>
+                    </div>
+
+                    {/* Cover Section */}
+                    <div className="mb-16">
+                        <div className="inline-block bg-purple-100 text-purple-700 px-3 py-1 rounded text-xs font-bold mb-4 uppercase tracking-widest">Premium Strategy</div>
+                        <h1 className="text-5xl font-black text-slate-900 leading-tight mb-6">
+                            {result.title}
+                        </h1>
+                        <p className="text-2xl text-slate-600 font-medium leading-relaxed border-l-4 border-slate-200 pl-6 py-2">
+                            {result.description}
+                        </p>
+                    </div>
+
+                    {/* Why You Section */}
+                    <div className="mb-12">
+                        <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400 mb-6 border-b border-slate-100 pb-2">Analysis: Why this fits you</h3>
+                        <div className="grid grid-cols-1 gap-4">
+                            {result.whyYou.map((reason: string, idx: number) => (
+                                <div key={idx} className="flex items-start gap-4 bg-slate-50 p-6 rounded-2xl">
+                                    <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold shrink-0">{idx + 1}</div>
+                                    <p className="text-lg font-medium text-slate-700 leading-snug pt-1">{reason}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Market Data Section */}
+                    <div className="mb-12">
+                        <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400 mb-6 border-b border-slate-100 pb-2">Market Environment</h3>
+                        <div className="grid grid-cols-3 gap-8">
+                            <div className="border-t-4 border-slate-900 pt-4">
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Market Size</p>
+                                <p className="text-3xl font-black text-slate-900">{result.market.size}</p>
+                            </div>
+                            <div className="border-t-4 border-green-500 pt-4">
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Growth Score</p>
+                                <p className="text-3xl font-black text-green-600">{result.market.growth}</p>
+                            </div>
+                            <div className="border-t-4 border-yellow-500 pt-4">
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Competition</p>
+                                <p className="text-3xl font-black text-slate-900">{result.market.competition}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Roadmap Section */}
+                    <div className="mb-16">
+                        <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400 mb-6 border-b border-slate-100 pb-2">8-Week Execution Roadmap</h3>
+                        <div className="space-y-4">
+                            {result.roadmap.map((step: any, idx: number) => (
+                                <div key={idx} className="flex gap-6 items-start border-b border-slate-50 pb-4">
+                                    <div className="w-16 font-black text-purple-600 text-sm whitespace-nowrap">{step.week}</div>
+                                    <div className="text-lg font-medium text-slate-800">{step.task}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Footer Disclaimer */}
+                    <div className="mt-20 pt-8 border-t border-slate-100 text-center">
+                        <p className="text-[10px] text-slate-400 font-medium px-20">
+                            본 리포트는 StartGen AI의 인공지능 분석 알고리즘을 통해 생성되었습니다. 제공되는 데이터는 시장 상황에 따라 변동될 수 있으며, 투자 및 사업 실행의 최종 결정 책임은 본인에게 있습니다.
+                        </p>
+                        <p className="text-[9px] text-slate-300 mt-4 tracking-widest uppercase">© 2026 STARTGEN AI GROUP ALL RIGHTS RESERVED - WWW.STARTGEN.AI</p>
+                    </div>
+                </div>
             </div>
         </div>
     );
