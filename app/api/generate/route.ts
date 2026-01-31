@@ -7,7 +7,8 @@ export async function POST(request: NextRequest) {
   try {
     const apiKey = process.env.GOOGLE_API_KEY;
     if (!apiKey) {
-      throw new Error("GOOGLE_API_KEY is missing in environment variables");
+      const envKeys = Object.keys(process.env).join(", ");
+      throw new Error(`GOOGLE_API_KEY is missing. Available Keys: ${envKeys.substring(0, 100)}...`);
     }
 
     // Initialize inside the handler to handle environment variable latency/absence safely
