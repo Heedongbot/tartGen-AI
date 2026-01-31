@@ -173,9 +173,9 @@ export async function POST(request: NextRequest) {
     console.error("메시지:", error.message);
 
     return NextResponse.json({
-      error: "아이디어 생성에 실패했습니다",
-      details: error.message,
-      suggestion: "잠시 후 다시 시도해주세요"
-    }, { status: 500 });
+      error: "아이디어 생성 실패",
+      details: error.message, // 프론트엔드에서 볼 수 있게 에러 메시지 포함
+      stack: error.stack // 디버깅용 스택 트레이스 (보안상 주의 필요하지만 지금은 디버깅이 우선)
+    }, { status: 200 }); // 200으로 보내서 클라이언트가 본문을 읽을 수 있게 함 (임시)
   }
 }
