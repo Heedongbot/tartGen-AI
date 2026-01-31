@@ -21,9 +21,9 @@ export async function POST(request: NextRequest) {
 
     // ✅ 핵심: JSON 모드 강제 설정 (User requested configuration)
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",  // Use stable model name
+      model: "gemini-pro",  // Fallback to most stable legacy model
       generationConfig: {
-        temperature: 0.6,                // 일관성을 위해 약간 낮춤
+        temperature: 0.7,
         topP: 0.8,
         maxOutputTokens: 8192,           // 충분한 토큰 할당
         responseMimeType: "application/json", // 🔑 완벽한 JSON 강제
