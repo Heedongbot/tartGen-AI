@@ -183,7 +183,7 @@ function ResultContent() {
             if (res.ok && data.success) {
                 toast.dismiss(loadingToast);
                 toast.success("아이디어가 성공적으로 저장되었습니다!");
-                setResult(prev => ({ ...prev, id: data.id, userId: user?.id }));
+                setResult((prev: any) => ({ ...prev, id: data.id, userId: user?.id }));
 
                 // Update URL to 'id' mode to persist state
                 window.history.replaceState(null, "", `/result?id=${data.id}`);
